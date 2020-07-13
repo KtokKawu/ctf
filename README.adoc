@@ -175,13 +175,27 @@ steghide --info nothing.jpg
 
 ==== Tools
 
+[cols="1,5"]
 |===
-|nmblookup|NetBIOS名の検索に使用されるNetBIOS over TCP / IPクライアントを収集
-|smbclient|SMB共有ディレクトリにアクセスするftpのようなクライアント
-|nmap|ポートスキャナ with スクリプト
-|rpcclient|クライアント側のMS-RPC機能を実行するツール
-|enum4linux|さまざまなsmb関数を列挙
-|wireshark|「ntlmssp.ntlmv2_response」でフィルタリングしてNTLMv2のトラフィックからsmbの情報を取得可能
+|ツール名 |説明
+
+|nmblookup
+|NetBIOS名の検索に使用されるNetBIOS over TCP/IPクライアントを収集
+
+|smbclient
+|SMB共有ディレクトリにアクセスするftpのようなクライアント
+
+|nmap
+|ポートスキャナ with スクリプト
+
+|rpcclient
+|クライアント側のMS-RPC機能を実行するツール
+
+|enum4linux
+|さまざまなsmb関数を列挙
+
+|wireshark
+|「ntlmssp.ntlmv2_response」でフィルタリングしてNTLMv2のトラフィックからsmbの情報を取得可能
 |===
 
 ==== チェックリスト
@@ -282,16 +296,20 @@ gobuster -e -u http://[TargetIP]/ -w /usr/share/dirbuster/wordlists/directory-li
 === Bruteforce Attack
 
 .Bruteforce tool list
+[cols="2, 7a"]
 |===
-|ツール名
-|サポートプロトコル
+|ツール名 |サポートプロトコル
 
 |Hydra
-|TELNET, FTP, HTTP, HTTPS, HTTP-PROXY, SMB, SMBNT, MS-SQL, MYSQL, REXEC, irc, RSH, RLOGIN, CVS, SNMP, SMTP, SOCKS5, VNC, POP3, IMAP, NNTP, PCNFS, XMPP, ICQ, SAP/R3, LDAP2, LDAP3, Postgres, Teamspeak, Cisco auth, Cisco enable, AFP, Subversion/SVN, Firebird, LDAP2, Cisco AAA
+|TELNET, FTP, HTTP, HTTPS, HTTP-PROXY, SMB, SMBNT, MS-SQL, MYSQL, REXEC, irc, RSH, +
+RLOGIN, CVS, SNMP, SMTP, SOCKS5, VNC, POP3, IMAP, NNTP, PCNFS, XMPP, ICQ, +
+SAP/R3, LDAP2, LDAP3, Postgres, Teamspeak, Cisco auth, Cisco enable, AFP, Subversion/SVN, +
+Firebird, LDAP2, Cisco AAA, Web form
 
 |Medusa
-|AFP, CVS, FTP, HTTP, IMAP, MS-SQL, MySQL, NetWare NCP, NNTP, PcAnywhere, POP3, PostgreSQL, REXEC, RLOGIN, RSH, SMBNT, SMTP-AUTH, SMTP-VRFY, SNMP, SSHv2, Subversion (SVN), Telnet, VMware Authentication Daemon (vmauthd), VNC, Generic Wrapper,
-Web Form
+|AFP, CVS, FTP, HTTP, IMAP, MS-SQL, MySQL, NetWare NCP, NNTP, PcAnywhere, POP3, +
+PostgreSQL, REXEC, RLOGIN, RSH, SMBNT, SMTP-AUTH, SMTP-VRFY, SNMP, SSHv2, Subversion (SVN), +
+Telnet, VMware Authentication Daemon (vmauthd), VNC, Generic Wrapper, Web Form
 
 |Ncrack
 |RDP, SSH, http(s), SMB, pop3(s), VNC, FTP, telnet
@@ -299,12 +317,20 @@ Web Form
 
 ==== hydra
 
+* 効率的には、およそssh(2/s) < ftp(6/s) < http-basic(100/s)の速さ
+* パスワードスプレー攻撃も可能 +
+-l：uid固定、-L：uidリスト、-p：pwd固定、-P：pwdリスト
+
 ----
-# -Vオプション：PWDマイニング中に2つのログイン+パスワードを表示
-# -fオプション：指定したPWDが見つかったら停止
-hydra -l [uname] -P ~/pwd-list/[pwdtext] [TargetIP] [TargetProtocol] -V -f
-# 効率的には、およそssh(2/s) < ftp(6/s) < http-basic(100/s)の速さ
-# パスワードスプレー攻撃も可能
+hydra -l [uname] \
+      -P ~/pwd-list/[pwdtext] \
+      [TargetIP] \
+      [TargetProtocol] \
+      -V \                                                          # PWDマイニング中にUID、PWDを表示
+      -f \                                                          # 指定したPWDが見つかったら停止
+# Web form
+#     http-post-form \
+#     “/path/to/login:uid=XXXXX&pwd=XXXXX&Login=Login:Login Failed” # "[Login Page]:[Request Body]:[Error Message]"
 ----
 
 ==== ncrack
@@ -312,7 +338,10 @@ hydra -l [uname] -P ~/pwd-list/[pwdtext] [TargetIP] [TargetProtocol] -V -f
 * RDPサービスに関してはhydraより早いらしい
 
 ----
-ncrack -u [uname] -P ~/pwd-list/[pwdtext] -T5 [TargetIP] -p [TargetServicePort]
+ncrack -u [uname] \
+       -P ~/pwd-list/[pwdtext] \
+       -T5 [TargetIP] \
+       -p [TargetServicePort]
 ----
 
 ==== meduza
@@ -320,7 +349,15 @@ ncrack -u [uname] -P ~/pwd-list/[pwdtext] -T5 [TargetIP] -p [TargetServicePort]
 * 一番遅い
 
 ----
-medusa -u [uname] -P ~/pwd-list/[pwdtext] -h [TargetIP] -M [TragetService]
+medusa -h [TargetIP] \
+       -u [uname] \
+       -P ~/pwd-list/[pwdtext] \
+       -M [TragetService]
+# Web Form
+#      -M web-form \
+#      -m FORM:"path/to/login" \
+#      -m DENY-SIGNAL:"Example Access Denied" \
+#      -m FORM-DATA:"post?uid=XXXXX&pwd=XXXXX&Login=Login"
 ----
 
 === Penetration
