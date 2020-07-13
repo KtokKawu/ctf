@@ -1,6 +1,7 @@
 //////////////////////////////
 // Settings
 //////////////////////////////
+:toc:
 :idprefix:
 :idseparator: -
 ifndef::env-github[:icons: font]
@@ -438,7 +439,7 @@ chmod +x LinEnum.sh
 ./LinEnum.sh
 ----
 
-=== 情報元
+== 情報元
 
 ----
 # Docker
