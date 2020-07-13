@@ -430,7 +430,7 @@ chmod +x linpeas.sh
 ./linpeas.sh
 ----
 
-===== LinEnum
+==== LinEnum
 
 ----
 # 攻撃者側
