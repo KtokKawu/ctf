@@ -145,7 +145,6 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
 
 .SMBの例
 ----
-https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b
 nmap -sC -p 139,445 -sV [TargetIP]
 ----
 
@@ -290,7 +289,7 @@ check pcap
 === ディレクトリ検査
 
 ----
-gobuster -e -u http://[TargetIP]/ -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -s 200,301,302,403,404 -e -x html,php,txt -l -o ./result_gobuster.txt
+gobuster -e -u http://[TargetIP]/ -w /usr/share/dirbuster/wordlists/[DirList] -s 200,301,302,403,404 -e -x html,php,txt -l -o ./result_gobuster.txt
 ----
 
 === Bruteforce Attack
