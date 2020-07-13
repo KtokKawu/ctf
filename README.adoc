@@ -1,7 +1,12 @@
 //////////////////////////////
 // Settings
 //////////////////////////////
-:toc:
+:toc: macro
+:toc-title: 目次
+:toclevels: 5
+:sectnums:
+:sectanchors:
+:sectlinks:
 :idprefix:
 :idseparator: -
 ifndef::env-github[:icons: font]
@@ -28,6 +33,8 @@ KtokKawuは、自衛や検証/CTFのため、ハッキング技術を学習し�
 必ず自己責任の元、ローカル環境やCTF等で攻撃が許可されたサイトに対してのみ使用すること。 +
 KtokKawuは、本リポジトリを利用する他のユーザや企業、団体等が起こした全ての事象に関して一切責任を負いません。
 ====
+
+toc::[]
 
 == Kali Dockerコンテナの作成
 
