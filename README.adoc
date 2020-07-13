@@ -402,7 +402,7 @@ chmod 600 id_rsa
 . https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack
 . https://github.com/rebootuser/LinEnum
 
-==== 手順
+==== 攻撃・防御のコツ
 
 * ターゲット側でスクリプトを実行する際は、 +
 使っているユーザ権限で自由にファイル授受できるディレクトリに移動するとよい。
@@ -413,6 +413,31 @@ chmod 600 id_rsa
 /dev/shm
 /var/lock
 /run/lock
+----
++
+* 攻撃者が足跡をなるべく残さないために何をしている...？ + 
+tor、串、over ssh、ログ削除、rootで行動、と他には何があるか？ +
+->別サーバへログをリダイレクトしたほうがいい、権限認証もしっかりして侵入させない
++
+.RHEL系
+|===
+|ディレクトリ/ファイル名|形式
+|/var/run/utmp|バイナリ
+|/var/log/wtmp|テキスト/バイナリ
+|===
++
+.Debian系
+|===
+|ディレクトリ|形式
+|/var/log|テキスト/バイナリ
+|===
++
+※ logの設定は、/etc/rsyslog.confや/etc/rsyslog.d/*.confを確認
++
+* 秘密情報の取得
++
+----
+find /  -iname "*pwd*" -or -iname "*pass*" -or -iname "*secret*" -or -name "id_rsa" 2>/dev/null
 ----
 
 ==== LinPEAS
@@ -483,4 +508,6 @@ https://github.com/danielmiessler/SecLists/tree/master/Passwords
 https://github.com/asciidoctor/asciidoctor/blob/master/README-jp.adoc
 https://asciidoctor.org/docs/user-manual/
 https://asciidoctor.org/docs/asciidoc-recommended-practices/
+# Linux Log
+https://qiita.com/Yorinton/items/897c1ccd6797a7df7805
 ----
