@@ -1,0 +1,135 @@
+//////////////////////////////
+// Settings
+//////////////////////////////
+:idprefix:
+:idseparator: -
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:status:
+:outfilesuffix: .adoc
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+//////////////////////////////
+// Contents
+//////////////////////////////
+= CTF
+
+[CAUTION]
+====
+悪用厳禁
+====
+
+== Kali Dockerコンテナの作成
+
+=== 初回の手順
+
+[PowerShell/CMD]
+----
+# Kali Linuxの公式イメージDL
+docker pull kalilinux/kali-rolling
+docker images
+# Dockerfileを使用する場合
+docker image build -t kalilinux/kali-rolling:latest C:\path\to\Dockerfile
+# コンテナ(初回)起動
+docker run -it --name <C-NAME> kalilinux/kali-rolling
+docker exec -it <CID> /bin/bash
+# リポジトリの登録
+echo "deb http://http.kali.org/kali kali-rolling main contrib non-free" > /etc/apt/sources.list \
+&& echo "deb-src http://http.kali.org/kali kali-rolling main contrib non-free" >> /etc/apt/sources.list \
+&& echo "deb http://http.kali.org/kali kali-last-snapshot main contrib non-free" >> /etc/apt/sources.list \
+&& echo "deb http://http.kali.org/kali kali-experimental main contrib non-free" >> /etc/apt/sources.list
+# Kali Linuxのパッケージインストール
+apt -y update && apt -y upgrade
+apt install -y kali-linux-full
+# 他ツール、ライブラリ
+apt install -y bash-completion build-essential bzip2 colordiff colortail curl exiftool gdb git iputils-ping iputils-tracepath jq libjpeg-dev libssl-dev libxml2-dev libxslt1-dev ltrace mariadb-client net-tools nodejs npm postgresql python-dev rlwrap smbclient steghide strace telnet tor vim wget yarnpkg zip zlib1g-dev
+# apt install -y bash-completion build-essential bzip2 colordiff colortail libjpeg-dev libssl-dev nikto nmblookup pip python-pybloomfiltermmap rpcclient
+# Setup gdb-peda
+git clone https://github.com/longld/peda.git ~/peda \
+&& echo "source ~/peda/peda.py" >> ~/.gdbinit
+# Setup nmap CVE script
+# Option Usage: --script=vulscan/vulscan.nse www.example.com
+git clone https://github.com/scipag/vulscan ~/scipag_vulscan \
+&& ln -s `pwd`/scipag_vulscan /usr/share/nmap/scripts/vulscan
+# Install and configure AutoRecon
+mkdir /tools \
+&& git clone --depth 1 https://github.com/Tib3rius/AutoRecon.git /tools/AutoRecon \
+&& cd /tools/AutoRecon \
+&& pip3 install -r requirements.txt \
+&& ln -s /tools/AutoRecon/src/autorecon/autorecon.py /usr/local/bin/autorecon
+# Get some scripts
+git clone https://github.com/pentestmonkey/php-reverse-shell ~/prh \
+&& git clone https://github.com/lucyoa/kernel-exploits ~/exploits/ksploits \
+&& git clone https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite ~/exploits/peass \
+&& git clone https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack ~/exploits/unixploits \
+&& git clone https://github.com/danielmiessler/SecLists /usr/share/seclists \
+&& git clone https://github.com/andresriancho/w3af.git /opt/w3af \
+/opt/w3af/w3af_console ; \
+bash /tmp/w3af_dependency_install.sh ; \
+echo 'export PATH=/opt/w3af:$PATH' >> /etc/profile
+# Get Password list
+mkdir ~/pwd-list \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/john.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/cain.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/conficker.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/500-worst-passwords.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/twitter-banned.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/rockyou.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/phpbb.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/myspace.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/hotmail.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/faithwriters.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/elitehacker.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/hak5.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/alypaa.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/facebook-pastebay.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/porn-unknown.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/tuscl.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/facebook-phished.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/carders.cc.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/singles.org.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/english.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/german.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/us_cities.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/porno.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/honeynet.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/file-locations.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/fuzzing-strings.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/phpmyadmin-locations.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/web-extensions.txt.bz2 \
+&& wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/web-mutations.txt.bz2 \
+&& bzip2 -d ~/pwd-list/*.bz2
+# コンテナ保存
+docker stop <CID>
+docker rename <CID> <C-NAME>
+docker commit <CID> <REPO-NAME>:<TAG-NAME>
+# コンテナ起動(ホスト側へポートフォワード)
+docker images
+docker run --name <C-NAME> -itd -p <HOST-PORT>:<C-PORT> /bin/bash <REPO-NAME>:<TAG-NAME>
+docker ps -a
+# 不要なコンテナ、イメージ削除
+docker rm -f <CID>
+docker rmi -f <IID>
+----
+
+=== 2回目以降のコンテナ利用
+
+[PowerShell/CMD]
+----
+# コンテナ接続
+docker exec -it <C-NAME> /bin/bash
+# コンテナ開始/停止/再起動
+docker stop/start/restart <C-NAME>
+# IP確認
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
+----
+  
+=== 注意事項
+
+* Windows Firewallの受信規則のうち、パブリックの「com.docker.backend」が有効だと、 +
+リバースシェルを張る時などのインバウンド通信が失敗してしまう。Linuxで構築する場合も同様。
