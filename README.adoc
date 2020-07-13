@@ -447,6 +447,8 @@ https://www.kali.org/docs/containers/official-kalilinux-docker-images/
 http://www.tohoho-web.com/docker/index.html
 https://qiita.com/wMETAw/items/34ba5c980e2a38e548db
 http://docs.docker.jp/index.html
+# General
+https://kakyouim.hatenablog.com/entry/2020/04/17/182049
 # SMB Attack
 https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b
 https://0xdf.gitlab.io/2018/12/02/pwk-notes-smb-enumeration-checklist-update1.html
@@ -464,6 +466,8 @@ https://github.com/pentestmonkey/php-reverse-shell
 https://github.com/lucyoa/kernel-exploits
 https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite
 https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack
+https://null-byte.wonderhowto.com/how-to/use-linenum-identify-potential-privilege-escalation-vectors-0197225/
+https://kakyouim.hatenablog.com/entry/2020/03/14/031746
 # Password lists
 https://wiki.skullsecurity.org/Passwords
 https://github.com/danielmiessler/SecLists/tree/master/Passwords
