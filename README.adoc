@@ -330,7 +330,7 @@ hydra -l [uname] \
       -f \                                                          # 指定したPWDが見つかったら停止
 # Web form
 #     http-post-form \
-#     “/path/to/login:uid=XXXXX&pwd=XXXXX&Login=Login:Login Failed” # "[Login Page]:[Request Body]:[Error Message]"
+#     "/path/to/login:uid=XXXXX&pwd=XXXXX&Login=Login:Login Failed" # "[Login Page]:[Request Body]:[Error Message]"
 ----
 
 ==== ncrack
