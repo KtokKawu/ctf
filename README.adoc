@@ -60,6 +60,8 @@ apt -y update && apt -y upgrade
 apt install -y kali-linux-full
 # 他ツール、ライブラリ
 apt install -y bash-completion build-essential bzip2 colordiff colortail curl exiftool gdb git iputils-ping iputils-tracepath jq libjpeg-dev libssl-dev libxml2-dev libxslt1-dev ltrace mariadb-client net-tools nodejs npm postgresql python-dev rlwrap smbclient steghide strace telnet tor vim wget yarnpkg zip zlib1g-dev
+curl https://raw.githubusercontent.com/Paradoxis/StegCracker/master/stegcracker > /usr/local/bin/stegcracker
+chmod +x /usr/local/bin/stegcracker
 # apt install -y bash-completion build-essential bzip2 colordiff colortail libjpeg-dev libssl-dev nikto nmblookup pip python-pybloomfiltermmap rpcclient
 # Setup gdb-peda
 git clone https://github.com/longld/peda.git ~/peda \
@@ -176,6 +178,7 @@ binwalk -e nothing.jpg
 foremost nothing.jpg
 steghide extract -sf nothing.jpg -p [password]
 steghide --info nothing.jpg
+stegcracker any-name.jpeg /usr/share/wordlists/rockyou.txt
 ----
 
 === SMB Attack
