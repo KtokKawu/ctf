@@ -155,9 +155,8 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
 
 === ポートとOSSバージョンの確認
 
-.SMBの例
 ----
-nmap -sC -p 139,445 -sV [TargetIP]
+nmap -T5 --max-retries 2500 -sC -sV [TargetIP]
 ----
 
 === CVEのチェック
@@ -222,6 +221,8 @@ nmblookup -A [ip]
 * 共有フォルダの一覧
 +
 ----
+# nmapによる共有フォルダ一覧の表示(-pオプションがあるとscriptが動かない場合有り)
+nmap -T5 --script nfs-ls,nfs-statfs,nfs-showmount -p 445 [TargetIP]
 # ホスト上の共有フォルダ一覧とアクセス権を表示
 smbmap -H [ip/hostname] -R
 # SMBからファイルを取得
