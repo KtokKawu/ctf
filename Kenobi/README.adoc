@@ -31,3 +31,156 @@ Nmap done: 1 IP address (1 host up) scanned in 9.59 seconds
 ----
 
 ->7
+
+=== [Task 2] Enumerating Samba for shares
+
+==== #1 Using nmap we can enumerate a machine for SMB shares. Nmap has the ability to run to automate a wide variety of networking tasks. There is a script to enumerate shares! ```nmap -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse MACHINE_IP``` SMB has two ports, 445 and 139. Using the nmap command above, how many shares have been found?
+
+nmapを使用すると、SMB共有用のマシンを列挙できます。 +
+Nmapは、様々なネットワーキングタスクを自動実行する機能を備えています。 +
+共有ディレクトリを列挙するスクリプトがあります！ ```nmap -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse MACHINE_IP``` +
+SMBには、445と139の2つのポートがあります。 +
+image::https://i.imgur.com/bkgVNy3.png[] +
+上記のnmapコマンドを使用して、いくつの共有ディレクトリが見つかりましたか？
+
+----
+# 「-p 445」があるとSTATEがfilteredになって結果が得られない。「=」や「.nse」は無くてもOK
+# nmap -T5 --script smb-enum-shares,smb-enum-users 10.10.204.92
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-07-23 20:00 UTC
+Nmap scan report for 10.10.204.92
+Host is up (0.087s latency).
+Not shown: 993 filtered ports
+PORT     STATE SERVICE
+21/tcp   open  ftp
+22/tcp   open  ssh
+80/tcp   open  http
+111/tcp  open  rpcbind
+139/tcp  open  netbios-ssn
+445/tcp  open  microsoft-ds
+2049/tcp open  nfs
+
+Host script results:
+| smb-enum-shares:
+|   account_used: guest
+|   \\10.10.204.92\IPC$:
+|     Type: STYPE_IPC_HIDDEN
+|     Comment: IPC Service (kenobi server (Samba, Ubuntu))
+|     Users: 1
+|     Max Users: <unlimited>
+|     Path: C:\tmp
+|     Anonymous access: READ/WRITE
+|     Current user access: READ/WRITE
+|   \\10.10.204.92\anonymous:
+|     Type: STYPE_DISKTREE
+|     Comment:
+|     Users: 0
+|     Max Users: <unlimited>
+|     Path: C:\home\kenobi\share
+|     Anonymous access: READ/WRITE
+|     Current user access: READ/WRITE
+|   \\10.10.204.92\print$:
+|     Type: STYPE_DISKTREE
+|     Comment: Printer Drivers
+|     Users: 0
+|     Max Users: <unlimited>
+|     Path: C:\var\lib\samba\printers
+|     Anonymous access: <none>
+|_    Current user access: <none>
+|_smb-enum-users: ERROR: Script execution failed (use -d to debug)
+
+Nmap done: 1 IP address (1 host up) scanned in 48.06 seconds
+----
+
+->3
+
+==== #2 On most distributions of Linux smbclient is already installed. Lets inspect one of the shares. ```smbclient //<ip>/anonymous``` Using your machine, connect to the machines network share. Once you're connected, list the files on the share. What is the file can you see ?
+
+殆どのLinuxディストリビューションでは、smbclientが既にインストールされています。 +
+共有フォルダを1つ検査してみよう。 +
+マシンを使用して、 ```smbclient //<ip>/anonymous``` を打ち、マシンのネットワーク共有フォルダに接続します。 +
+接続後に、shareディレクトリのファイルを一覧表示します。あなたが見られるファイルは何ですか？
+
+----
+# smbclient //10.10.204.92/anonymous
+Enter WORKGROUP\GUEST's password: [PWは空打ち]
+Try "help" to get a list of possible commands.
+smb: \> ls
+  .                                   D        0  Wed Sep  4 10:49:09 2019
+  ..                                  D        0  Wed Sep  4 10:56:07 2019
+  log.txt                             N    12237  Wed Sep  4 10:49:09 2019
+
+                9204224 blocks of size 1024. 6877092 blocks available
+----
+
+->log.txt
+
+==== #3 You can recursively download the SMB share too. Submit the username and password as nothing. ```smbget -R smb://<ip>/anonymous``` Open the file on the share. There is a few interesting things found. ・Information generated for Kenobi when generating an SSH key for the user. ・Information about the ProFTPD server. What port is FTP running on?
+
+SMB共有フォルダも再帰的にダウンロードできます。ユーザ名とPWはから入力で送信しなさい。 +
+```smbget -R smb：//<ip>/anonymous``` +
+共有上のファイルを開きます。いくつかの興味深いものが見つかりました。 +
+
+* ユーザのSSHキー生成時のKenobi用に生成された情報
+* ProFTPDサーバーに関する情報
+
+FTPはどのポートで実行されていますか？
+
+----
+# smbget -R smb://10.10.204.92/anonymous
+Password for [guest] connecting to //anonymous/10.10.204.92:
+Using workgroup WORKGROUP, user guest
+smb://10.10.204.92/anonymous/log.txt
+Downloaded 11.95kB in 8 seconds
+# ls
+log.txt
+# cat log.txt
+Generating public/private rsa key pair.
+～省略～
+# This is a basic ProFTPD configuration file (rename it to
+# 'proftpd.conf' for actual use.  It establishes a single server
+# and a single anonymous login.  It assumes that you have a user/group
+# "nobody" and "ftp" for normal operation and anon.
+
+ServerName                      "ProFTPD Default Installation"
+ServerType                      standalone
+DefaultServer                   on
+
+# Port 21 is the standard FTP port.
+Port                            21
+～省略～
+----
+
+->21
+
+==== #4 Your earlier nmap port scan will have shown port 111 running the service rpcbind. This is just an server that converts remote procedure call (RPC) program number into universal addresses. When an RPC service is started, it tells rpcbind the address at which it is listening and the RPC program number its prepared to serve. In our case, port 111 is access to a network file system. Lets use nmap to enumerate this. ```nmap -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount MACHINE_IP``` What mount can we see?
+
+以前のnmapポートスキャンでは、ポート111がrpcbindサービスを実行していると示されていました。 +
+これは、Remote Procedure Call (RPC) プログラム番号をユニバーサルアドレスに変換するサーバーにすぎません。 +
+RPCサービスが開始されると、当該サービスはrpcbindへ、待機しているアドレスと、それらを提供する準備ができているRPCプログラム番号を通知します。 +
+この場合、ポート111はネットワークファイルシステムへのアクセスです。 +
+nmapでこれを列挙してみよう。 +
+```nmap -p 111 --script = nfs-ls、nfs-statfs、nfs-showmount MACHINE_IP``` +
+どのマウントが見えますか？
+
+----
+# 「-p 111」があるとSTATEがfilteredになって結果が得られない
+# nmap -T5 --script nfs-ls,nfs-statfs,nfs-showmount 10.10.204.92
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-07-23 20:32 UTC
+Nmap scan report for 10.10.204.92
+Host is up (0.093s latency).
+Not shown: 993 filtered ports
+PORT     STATE SERVICE
+21/tcp   open  ftp
+22/tcp   open  ssh
+80/tcp   open  http
+111/tcp  open  rpcbind
+| nfs-showmount:
+|_  /var *
+139/tcp  open  netbios-ssn
+445/tcp  open  microsoft-ds
+2049/tcp open  nfs
+
+Nmap done: 1 IP address (1 host up) scanned in 11.47 seconds
+----
+
+->/var
