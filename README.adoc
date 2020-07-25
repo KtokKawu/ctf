@@ -140,6 +140,8 @@ docker rmi -f <IID>
 docker exec -it <C-NAME> /bin/bash
 # コンテナ開始/停止/再起動
 docker stop/start/restart <C-NAME>
+# コンテナ内からホストへファイルをコピー
+docker cp <C-ID>:/file/path/within/container /host/path/target
 # IP確認
 docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
 ----
