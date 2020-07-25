@@ -1,4 +1,19 @@
+//////////////////////////////
+// Settings
+//////////////////////////////
+:toc: macro
+:toc-title: 目次
+:toclevels: 4
+:sectnums:
+:sectanchors:
+:sectlinks:
+
+//////////////////////////////
+// Contents
+//////////////////////////////
 = Kenobi solution
+
+toc::[]
 
 === [Task 1] Deploy the vulnerable machine
 
@@ -12,6 +27,7 @@
 
 nmapでマシンをスキャンしたら、openなポートはいくつありましたか？
 
+[bash]
 ----
 # nmap -T5 10.10.204.92
 Starting Nmap 7.80 ( https://nmap.org ) at 2020-07-23 19:30 UTC
@@ -39,10 +55,17 @@ Nmap done: 1 IP address (1 host up) scanned in 9.59 seconds
 nmapを使用すると、SMB共有用のマシンを列挙できます。 +
 Nmapは、様々なネットワーキングタスクを自動実行する機能を備えています。 +
 共有ディレクトリを列挙するスクリプトがあります！ ```nmap -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse MACHINE_IP``` +
-SMBには、445と139の2つのポートがあります。 +
-image::https://i.imgur.com/bkgVNy3.png[] +
+SMBには、445と139の2つのポートがあります。
+
+++++
+<p align="left">
+  <img width="572" height="252" src="https://i.imgur.com/bkgVNy3.png">
+</p>
+++++
+
 上記のnmapコマンドを使用して、いくつの共有ディレクトリが見つかりましたか？
 
+[bash]
 ----
 # 「-p 445」があるとSTATEがfilteredになって結果が得られない。「=」や「.nse」は無くてもOK
 # nmap -T5 --script smb-enum-shares,smb-enum-users 10.10.204.92
@@ -100,6 +123,7 @@ Nmap done: 1 IP address (1 host up) scanned in 48.06 seconds
 マシンを使用して、 ```smbclient //<ip>/anonymous``` を打ち、マシンのネットワーク共有フォルダに接続します。 +
 接続後に、shareディレクトリのファイルを一覧表示します。あなたが見られるファイルは何ですか？
 
+[bash]
 ----
 # smbclient //10.10.204.92/anonymous
 Enter WORKGROUP\GUEST's password: [PWは空打ち]
@@ -125,6 +149,7 @@ SMB共有フォルダも再帰的にダウンロードできます。ユーザ�
 
 FTPはどのポートで実行されていますか？
 
+[bash]
 ----
 # smbget -R smb://10.10.204.92/anonymous
 Password for [guest] connecting to //anonymous/10.10.204.92:
@@ -162,6 +187,7 @@ nmapでこれを列挙してみよう。 +
 ```nmap -p 111 --script = nfs-ls、nfs-statfs、nfs-showmount MACHINE_IP``` +
 どのマウントが見えますか？
 
+[bash]
 ----
 # 「-p 111」があるとSTATEがfilteredになって結果が得られない
 # nmap -T5 --script nfs-ls,nfs-statfs,nfs-showmount 10.10.204.92
