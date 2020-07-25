@@ -118,10 +118,9 @@ Nmap done: 1 IP address (1 host up) scanned in 48.06 seconds
 
 ==== #2 On most distributions of Linux smbclient is already installed. Lets inspect one of the shares. ```smbclient //<ip>/anonymous``` Using your machine, connect to the machines network share. Once you're connected, list the files on the share. What is the file can you see ?
 
-殆どのLinuxディストリビューションでは、smbclientが既にインストールされています。 +
-共有フォルダを1つ検査してみよう。 +
+殆どのLinuxディストリビューションにインストールされている ```smbclient``` コマンドで共有フォルダを検査してみよう。 +
 マシンを使用して、 ```smbclient //<ip>/anonymous``` を打ち、マシンのネットワーク共有フォルダに接続します。 +
-接続後に、shareディレクトリのファイルを一覧表示します。あなたが見られるファイルは何ですか？
+その後、shareディレクトリのファイルを一覧表示した時、見つかるファイルは何ですか？
 
 [bash]
 ----
@@ -140,9 +139,9 @@ smb: \> ls
 
 ==== #3 You can recursively download the SMB share too. Submit the username and password as nothing. ```smbget -R smb://<ip>/anonymous``` Open the file on the share. There is a few interesting things found. ・Information generated for Kenobi when generating an SSH key for the user. ・Information about the ProFTPD server. What port is FTP running on?
 
-SMB共有フォルダも再帰的にダウンロードできます。ユーザ名とPWはから入力で送信しなさい。 +
-```smbget -R smb：//<ip>/anonymous``` +
-共有上のファイルを開きます。いくつかの興味深いものが見つかりました。 +
+下記コマンドを実行し、ユーザ名とPWを空で送信することで、SMB共有フォルダを再帰的にダウンロードできます。 +
+ ```smbget -R smb://<ip>/anonymous``` 共有上のファイルを開きます。 +
+ いくつかの興味深いものが見つかりました。
 
 * ユーザのSSHキー生成時のKenobi用に生成された情報
 * ProFTPDサーバーに関する情報
@@ -179,12 +178,11 @@ Port                            21
 
 ==== #4 Your earlier nmap port scan will have shown port 111 running the service rpcbind. This is just an server that converts remote procedure call (RPC) program number into universal addresses. When an RPC service is started, it tells rpcbind the address at which it is listening and the RPC program number its prepared to serve. In our case, port 111 is access to a network file system. Lets use nmap to enumerate this. ```nmap -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount MACHINE_IP``` What mount can we see?
 
-以前のnmapポートスキャンでは、ポート111がrpcbindサービスを実行していると示されていました。 +
-これは、Remote Procedure Call (RPC) プログラム番号をユニバーサルアドレスに変換するサーバーにすぎません。 +
-RPCサービスが開始されると、当該サービスはrpcbindへ、待機しているアドレスと、それらを提供する準備ができているRPCプログラム番号を通知します。 +
+以前のnmapポートスキャンでポート111がrpcbindサービスを実行していると分かった。 +
+これは、Remote Procedure Call(RPC)プログラム番号をユニバーサルアドレスに変換するサーバーにすぎません。 +
+RPCサービスが開始されると、当該サービスはrpcbindへ、lisstenしているアドレスと、それらを提供する準備ができているRPCプログラム番号を通知する。 +
 この場合、ポート111はネットワークファイルシステムへのアクセスです。 +
-nmapでこれを列挙してみよう。 +
-```nmap -p 111 --script = nfs-ls、nfs-statfs、nfs-showmount MACHINE_IP``` +
+nmapでこれを列挙してみよう。 ```nmap -p 111 --script = nfs-ls、nfs-statfs、nfs-showmount MACHINE_IP``` +
 どのマウントが見えますか？
 
 [bash]
