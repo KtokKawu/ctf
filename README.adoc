@@ -125,7 +125,7 @@ docker rename <CID> <C-NAME>
 docker commit <CID> <REPO-NAME>:<TAG-NAME>
 # コンテナ起動(ホスト側へポートフォワード)
 docker images
-docker run --name <C-NAME> -itd -p <HOST-PORT>:<C-PORT> /bin/bash <REPO-NAME>:<TAG-NAME>
+docker run --name <C-NAME> -itd -p <HOST-PORT>:<C-PORT> <REPO-NAME>:<TAG-NAME>
 docker ps -a
 # 不要なコンテナ、イメージ削除
 docker rm -f <CID>
