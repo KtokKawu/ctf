@@ -303,8 +303,21 @@ check pcap
 === ディレクトリ検査
 
 ----
-gobuster -e -u http://[TargetIP]/ -w /usr/share/dirbuster/wordlists/[DirList] -s 200,301,302,403,404 -e -x html,php,txt -l -o ./result_gobuster.txt
+gobuster dir \                    # ディレクトリ/ファイルの総当りモード
+         -u http://[TargetIP]/ \
+         -e \                     # URL全体を表示
+         -k \                     # SSL証明書の検証をスキップ
+         -o ./result_gobuster.txt
+         -s 200 \                 # 301,302,403,404
+         -t 40 \                  # 同時スレッド数
+         -w [DirList] \
+         -x html,txt \            # php
 ----
+
+簡易なDirList
++
+* /usr/share/wordlists/dirb/common.txt
+* /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt
 
 === Bruteforce Attack
 
