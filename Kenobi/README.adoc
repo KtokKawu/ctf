@@ -70,6 +70,8 @@ Nmap done: 1 IP address (1 host up) scanned in 9.59 seconds
 
 ```7```
 
+'''
+
 == [Task 2] Enumerating Samba for shares
 
 === #1
