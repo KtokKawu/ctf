@@ -161,15 +161,38 @@ nmap -T5 --max-retries 2500 -sC -sV [TargetIP]
 
 === CVEのチェック
 
+* nmap
++
 ----
 git clone https://github.com/scipag/vulscan scipag_vulscan
 ln -s `pwd`/scipag_vulscan /usr/share/nmap/scripts/vulscan
 nmap -sV -p [TargetPort] --script=vulscan/vulscan.nse www.example.com [TargetIP]
 ----
++
+* searchsploit
++
+----
+searchsploit [word]     # wordExapmle: 「ProFTPd 1.3.5」、「Apache 2.4.18」
+----
 
-=== ログイン施行
+=== ディレクトリ検査
 
-★そのうち書く
+----
+gobuster dir \                    # ディレクトリ/ファイルの総当りモード
+         -u http://[TargetIP]/ \
+         -e \                     # URL全体を表示
+         -k \                     # SSL証明書の検証をスキップ
+         -o ./result_gobuster.txt
+         -s 200 \                 # 301,302,403,404
+         -t 40 \                  # 同時スレッド数
+         -w [DirList] \
+         -x html,txt \            # php
+----
+
+DirList
+
+* /usr/share/wordlists/dirb/common.txt
+* /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt
 
 === Steganography
 
@@ -299,25 +322,6 @@ sleep 0.5 && echo ""
 # 例：Unix Samba 2.2.3a
 check pcap
 ----
-
-=== ディレクトリ検査
-
-----
-gobuster dir \                    # ディレクトリ/ファイルの総当りモード
-         -u http://[TargetIP]/ \
-         -e \                     # URL全体を表示
-         -k \                     # SSL証明書の検証をスキップ
-         -o ./result_gobuster.txt
-         -s 200 \                 # 301,302,403,404
-         -t 40 \                  # 同時スレッド数
-         -w [DirList] \
-         -x html,txt \            # php
-----
-
-簡易なDirList
-+
-* /usr/share/wordlists/dirb/common.txt
-* /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt
 
 === Bruteforce Attack
 
