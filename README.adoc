@@ -59,7 +59,7 @@ echo "deb http://http.kali.org/kali kali-rolling main contrib non-free" > /etc/a
 apt -y update && apt -y upgrade
 apt install -y kali-linux-full
 # 他ツール、ライブラリ
-apt install -y bash-completion build-essential bzip2 colordiff colortail curl exiftool gdb git iputils-ping iputils-tracepath jq libjpeg-dev libssl-dev libxml2-dev libxslt1-dev ltrace mariadb-client net-tools nodejs npm postgresql python-dev rlwrap smbclient steghide strace telnet tor vim wget yarnpkg zip zlib1g-dev
+apt install -y bash-completion build-essential bzip2 colordiff colortail curl exiftool gdb git iputils-ping iputils-tracepath jq libjpeg-dev libssl-dev libxml2-dev libxslt1-dev ltrace mariadb-client net-tools nodejs npm openvpn postgresql python-dev rlwrap smbclient steghide strace telnet tor vim wget yarnpkg zip zlib1g-dev
 curl https://raw.githubusercontent.com/Paradoxis/StegCracker/master/stegcracker > /usr/local/bin/stegcracker
 chmod +x /usr/local/bin/stegcracker
 # apt install -y bash-completion build-essential bzip2 colordiff colortail libjpeg-dev libssl-dev nikto nmblookup pip python-pybloomfiltermmap rpcclient
@@ -124,8 +124,10 @@ docker stop <CID>
 docker rename <CID> <C-NAME>
 docker commit <CID> <REPO-NAME>:<TAG-NAME>
 # コンテナ起動(ホスト側へポートフォワード)
+# openvpnを利用するには、Linux capabilitiesのCAP_NET_ADMINを許可する必要があるため、「--cap-add=NET_ADMIN」を追加
+# 上記により、openvpn利用時の「ERROR: Cannot ioctl TUNSETIFF tun: Operation not permitted (errno=1)」を回避
 docker images
-docker run --name <C-NAME> -itd -p <HOST-PORT>:<C-PORT> <REPO-NAME>:<TAG-NAME>
+docker run  --cap-add=NET_ADMIN --name <C-NAME> -itd -p <HOST-PORT>:<C-PORT> <REPO-NAME>:<TAG-NAME>
 docker ps -a
 # 不要なコンテナ、イメージ削除
 docker rm -f <CID>
@@ -144,12 +146,21 @@ docker stop/start/restart <C-NAME>
 docker cp <C-ID>:/file/path/within/container /host/path/target
 # IP確認
 docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
+
+# /bin/bash
+# openvpn利用時の「ERROR: Cannot open TUN/TAP dev /dev/net/tun: No such file or directory (errno=2)」の回避
+mkdir -p /dev/net
+mknod /dev/net/tun c 10 200
+# Try Hack MeへのOpen VPN接続
+openvpn /etc/openvpn/[TryHackMeUserName].ovpn &
 ----
   
 === 注意事項
 
 * Windows Firewallの受信規則のうち、パブリックの「com.docker.backend」が有効だと、 +
 リバースシェルを張る時などのインバウンド通信が失敗してしまう。Linuxで構築する場合も同様。
+* 「--cap-add=NET_ADMIN」の代わりに「--privileged」でもopenvpnのエラー(errno=1)を回避できるが、 +
+プライベートDockerインスタンスが特権モードで実行されると、ホストプロセスのアクセスやエスカレーションを許してしまうため非推奨。
 
 == ハッキング技術メモ
 
@@ -533,4 +544,6 @@ https://asciidoctor.org/docs/user-manual/
 https://asciidoctor.org/docs/asciidoc-recommended-practices/
 # Linux Log
 https://qiita.com/Yorinton/items/897c1ccd6797a7df7805
+# Linux capabilities
+https://man7.org/linux/man-pages/man7/capabilities.7.html
 ----
