@@ -19,33 +19,33 @@ toc::[]
 
 === #1
 
-==== T1-#1:En
+==== T1_#1:En
 
 Make sure you're connected to our network and deploy the machine
 
-==== T1-#1:Ja
+==== T1_#1:Ja
 
 ネットワークに接続していることを確認し、マシンをデプロイしなさい
 
-==== T1-#1:Solution
+==== T1_#1:Solution
 
 「Deploy」ボタンを押下
 
-==== T1-#1:Answer
+==== T1_#1:Answer
 
--
+\-
 
 === #2
 
-==== T1-#2:En
+==== T1_#2:En
 
 Scan the machine with nmap, how many ports are open?
 
-==== T1-#2:Ja
+==== T1_#2:Ja
 
 nmapでマシンをスキャンしたら、openなポートはいくつありましたか？
 
-==== T1-#2:Solution
+==== T1_#2:Solution
 
 [bash]
 ----
@@ -66,9 +66,9 @@ PORT     STATE SERVICE
 Nmap done: 1 IP address (1 host up) scanned in 9.59 seconds
 ----
 
-==== T1-#2:Answer
+==== T1_#2:Answer
 
-```7```
+7
 
 '''
 
@@ -76,7 +76,7 @@ Nmap done: 1 IP address (1 host up) scanned in 9.59 seconds
 
 === #1
 
-==== T2-#1:En
+==== T2_#1:En
 
 Using nmap we can enumerate a machine for SMB shares. +
 Nmap has the ability to run to automate a wide variety of networking tasks. +
@@ -84,7 +84,7 @@ There is a script to enumerate shares! ```nmap -p 445 --script=smb-enum-shares.n
 SMB has two ports, 445 and 139. +
 Using the nmap command above, how many shares have been found?
 
-==== T2-#1:Ja
+==== T2_#1:Ja
 
 nmapを使用すると、SMB共有用のマシンを列挙できます。 +
 Nmapは、様々なネットワーキングタスクを自動実行する機能を備えています。 +
@@ -99,7 +99,7 @@ SMBには、445と139の2つのポートがあります。
 
 上記のnmapコマンドを使用して、いくつの共有ディレクトリが見つかりましたか？
 
-==== T2-#1:Solution
+==== T2_#1:Solution
 
 [bash]
 ----
@@ -150,25 +150,25 @@ Host script results:
 Nmap done: 1 IP address (1 host up) scanned in 48.06 seconds
 ----
 
-==== T2-#1:Answer
+==== T2_#1:Answer
 
-```3```
+3
 
 === #2
 
-==== T2-#2:En
+==== T2_#2:En
 
 On most distributions of Linux smbclient is already installed. Lets inspect one of the shares. +
-```smbclient //<ip>/anonymous``` Using your machine, connect to the machines network share. +
+"smbclient //<ip>/anonymous" Using your machine, connect to the machines network share. +
 Once you're connected, list the files on the share. What is the file can you see ?
 
-==== T2-#2:Ja
+==== T2_#2:Ja
 
-殆どのLinuxディストリビューションにインストールされている ```smbclient``` コマンドで共有フォルダを検査してみよう。 +
-マシンを使用して、 ```smbclient //<ip>/anonymous``` を打ち、マシンのネットワーク共有フォルダに接続します。 +
+殆どのLinuxディストリビューションにインストールされているsmbclientコマンドで共有フォルダを検査してみよう。 +
+マシンを使用して、「smbclient //<ip>/anonymous」を打ち、マシンのネットワーク共有フォルダに接続します。 +
 その後、shareディレクトリのファイルを一覧表示した時、見つかるファイルは何ですか？
 
-==== T2-#2:Solution
+==== T2_#2:Solution
 
 [bash]
 ----
@@ -183,16 +183,16 @@ smb: \> ls
                 9204224 blocks of size 1024. 6877092 blocks available
 ----
 
-==== T2-#2:Answer
+==== T2_#2:Answer
 
-```log.txt```
+log.txt
 
 === #3
 
-==== T2-#3:En
+==== T2_#3:En
 
 You can recursively download the SMB share too. Submit the username and password as nothing. +
-```smbget -R smb://<ip>/anonymous``` Open the file on the share. +
+"smbget -R smb://<ip>/anonymous" Open the file on the share. +
 There is a few interesting things found. 
 
 * Information generated for Kenobi when generating an SSH key for the user.
@@ -200,10 +200,10 @@ There is a few interesting things found.
 
 What port is FTP running on?
 
-==== T2-#3:Ja
+==== T2_#3:Ja
 
 下記コマンドを実行し、ユーザ名とPWを空で送信することで、SMB共有フォルダを再帰的にダウンロードできます。 +
- ```smbget -R smb://<ip>/anonymous``` 共有上のファイルを開きます。 +
+ 「smbget -R smb://<ip>/anonymous」で共有上のファイルを開きます。 +
  いくつかの興味深いものが見つかりました。
 
 * ユーザのSSHキー生成時のKenobi用に生成された情報
@@ -211,7 +211,7 @@ What port is FTP running on?
 
 FTPはどのポートで実行されていますか？
 
-==== T2-#3:Solution
+==== T2_#3:Solution
 
 [bash]
 ----
@@ -239,30 +239,30 @@ Port                            21
 ～省略～
 ----
 
-==== T2-#3:Answer
+==== T2_#3:Answer
 
-```21```
+21
 
 === #4
 
-==== T2-#4:En
+==== T2_#4:En
 
 Your earlier nmap port scan will have shown port 111 running the service rpcbind.  +
 This is just an server that converts remote procedure call (RPC) program number into universal addresses. +
 When an RPC service is started, it tells rpcbind the address at which it is listening and the RPC program number its prepared to serve. +
 In our case, port 111 is access to a network file system. +
-Lets use nmap to enumerate this. ```nmap -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount MACHINE_IP``` What mount can we see?
+Lets use nmap to enumerate this. "nmap -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount MACHINE_IP" What mount can we see?
 
-==== T2-#4:Ja
+==== T2_#4:Ja
 
 以前のnmapポートスキャンでポート111がrpcbindサービスを実行していると分かった。 +
 これは、Remote Procedure Call(RPC)プログラム番号をユニバーサルアドレスに変換するサーバーにすぎません。 +
 RPCサービスが開始されると、当該サービスはrpcbindへ、lisstenしているアドレスと、それらを提供する準備ができているRPCプログラム番号を通知する。 +
 この場合、ポート111はネットワークファイルシステムへのアクセスです。 +
-nmapでこれを列挙してみよう。 ```nmap -p 111 --script = nfs-ls、nfs-statfs、nfs-showmount MACHINE_IP``` +
+「nmap -p 111 --script = nfs-ls、nfs-statfs、nfs-showmount MACHINE_IP」でこれを列挙してみよう。 +
 どのマウントが見えますか？
 
-==== T2-#4:Solution
+==== T2_#4:Solution
 
 [bash]
 ----
@@ -286,6 +286,10 @@ PORT     STATE SERVICE
 Nmap done: 1 IP address (1 host up) scanned in 11.47 seconds
 ----
 
-==== T2-#4:Answer
+==== T2_#4:Answer
 
-```/var```
+/var
+
+'''
+
+== [Task 3] Gain initial access with ProFtpd
