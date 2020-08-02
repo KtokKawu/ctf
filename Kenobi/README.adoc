@@ -11,9 +11,21 @@
 //////////////////////////////
 // Contents
 //////////////////////////////
-= Kenobi solution
+= TryHackMe Kenobi solution
 
 toc::[]
+
+== 準備
+
+OpenVPNでTryHackMeとの間にVPNを張っておく
+
+----
+PS C:\Users\USER>docker cp <THM-UNAME>.ovpn <C-ID>:/etc/openvpn/<THM-UNAME>.ovpn
+PS C:\Users\USER>docker exec -it <C-NAME> /bin/bash
+mkdir -p /dev/net
+mknod /dev/net/tun c 10 200
+openvpn /etc/openvpn/<THM-UNAME>.ovpn &
+----
 
 == [Task 1] Deploy the vulnerable machine
 
@@ -293,17 +305,6 @@ Nmap done: 1 IP address (1 host up) scanned in 11.47 seconds
 '''
 
 == [Task 3] Gain initial access with ProFtpd
-
-
-=== 準備
-
-----
-PS C:\Users\USER>docker cp <THM-UNAME>.ovpn <C-ID>:/etc/openvpn/<THM-UNAME>.ovpn
-PS C:\Users\USER>docker exec -it <C-NAME> /bin/bash
-mkdir -p /dev/net
-mknod /dev/net/tun c 10 200
-openvpn /etc/openvpn/<ユーザ名>.ovpn &
-----
 
 === #1
 
