@@ -555,19 +555,23 @@ d0b0f3f53b6caa532a83915e19224899
 
 Lets first understand what what SUID, SGID and Sticky Bits are.
 
+|===
 s|Permission s|On Files s|On Directories
 |SUID Bit |User executes the file with permissions of the file owner |-
 |SGID Bit |User executes the file with the permission of the group owner. |File created in directory gets the same group owner.
 |Sticky Bit |No meaning |Users are prevented from deleting files from other users.
+|===
 
 ==== #1:Ja
 
 まず、SUID、SGID、スティッキービットとは何かを理解しましょう。
 
+|===
 s|権限 s|ファイル s|ディレクトリ
 |SUIDビット |ユーザはファイル所有者の権限でファイルを実行します |-
 |SGIDビット |ユーザは、グループ所有者の許可を得てファイルを実行します。 |ディレクトリに作成されたファイルは、同じグループ所有者を取得します。
 |スティッキービット |意味なし |ユーザは他ユーザからファイルを削除できません。
+|===
 
 ==== T4_#1:En
 
@@ -593,7 +597,7 @@ SUIDビットを持つ他のカスタムファイルでは、あらゆる種類�
 
 ==== T4_#1:Solution
 
-自環境とKenobiの環境で下記コマンドを実行して、差分を確認してみる。
+自環境とKenobiの環境で下記コマンドを実行し、差分を確認してみる。
 
 ----
 find / -perm -u=s -type f 2>/dev/null
@@ -635,7 +639,8 @@ Strings is a command on Linux that looks for human readable strings on a binary.
 </p>
 ++++
 
-This shows us the binary is running without a full path (e.g. not using /usr/bin/curl or /usr/bin/uname).
+This shows us the binary is running without a full path +
+(e.g. not using /usr/bin/curl or /usr/bin/uname).
 
 As this file runs as the root users privileges, we can manipulate our path gain a root shell.
 
@@ -655,7 +660,8 @@ Which is actually a version of /usr/sh, as well as this file being run as root i
 
 文字列は、人間が読めるバイナリ上の文字列を探すLinuxのコマンドです。
 
-これは、バイナリがフルパス無しで実行されていることを示しています（たとえば、/usr/bin/curlまたは/usr/bin/unameを使用していません）。
+これは、バイナリがフルパス無しで実行されていることを示しています +
+（たとえば、/usr/bin/curl または /usr/bin/uname を使用していません）。
 
 このファイルはrootユーザー権限で実行されるため、パスを操作してrootシェルを取得できます。
 
