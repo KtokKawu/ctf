@@ -464,7 +464,7 @@ So we've now moved Kenobi's private key to the "/var/tmp" directory.
 
 ==== T3_#4:Ja
 
-次に、SITE CPFRおよびSITE CPTOコマンドを使用して、ケノービの秘密鍵をコピーします。
+次に、SITE CPFRおよびSITE CPTOコマンドを使用して、Kenobiの秘密鍵をコピーします。
 
 ++++
 <p align="left">
@@ -522,7 +522,7 @@ ls -la /mnt/kenobiNFS
 </p>
 ++++
 
-これで、展開したマシンにネットワークマウントができました。 +
+以上より、展開したマシンにNWマウントできました。 +
 「/var/tmp」に移動して秘密鍵を取得し、Kenobiのアカウントにログインします。 +
 
 ++++
