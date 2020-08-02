@@ -124,10 +124,11 @@ docker stop <CID>
 docker rename <CID> <C-NAME>
 docker commit <CID> <REPO-NAME>:<TAG-NAME>
 # コンテナ起動(ホスト側へポートフォワード)
-# openvpnを利用するには、Linux capabilitiesのCAP_NET_ADMINを許可する必要があるため、「--cap-add=NET_ADMIN」を追加
+# openvpnを利用するには、Linux capabilitiesのCAP_NET_ADMINを許可する必要があるため、「--cap-add NET_ADMIN」を追加
 # 上記により、openvpn利用時の「ERROR: Cannot ioctl TUNSETIFF tun: Operation not permitted (errno=1)」を回避
+# またmountを利用するには、Linux capabilitiesのCAP_SYS_ADMINを許可する必要があるため、「--cap-add SYS_ADMIN」を追加
 docker images
-docker run  --cap-add=NET_ADMIN --name <C-NAME> -itd -p <HOST-PORT>:<C-PORT> <REPO-NAME>:<TAG-NAME>
+docker run --cap-add NET_ADMIN  --cap-add SYS_ADMIN --name <C-NAME> -itd -p <HOST-PORT>:<C-PORT> <REPO-NAME>:<TAG-NAME>
 docker ps -a
 # 不要なコンテナ、イメージ削除
 docker rm -f <CID>
@@ -159,7 +160,7 @@ openvpn /etc/openvpn/[TryHackMeUserName].ovpn &
 
 * Windows Firewallの受信規則のうち、パブリックの「com.docker.backend」が有効だと、 +
 リバースシェルを張る時などのインバウンド通信が失敗してしまう。Linuxで構築する場合も同様。
-* 「--cap-add=NET_ADMIN」の代わりに「--privileged」でもopenvpnのエラー(errno=1)を回避できるが、 +
+* 「--cap-add」を利用する代わりに「--privileged」でもopenvpnのエラー(errno=1)を回避できるが、 +
 プライベートDockerインスタンスが特権モードで実行されると、ホストプロセスのアクセスやエスカレーションを許してしまうため非推奨。
 
 == ハッキング技術メモ
