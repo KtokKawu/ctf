@@ -71,7 +71,7 @@ git clone https://github.com/longld/peda.git ~/peda \
 git clone https://github.com/scipag/vulscan ~/scipag_vulscan \
 && ln -s `pwd`/scipag_vulscan /usr/share/nmap/scripts/vulscan
 # Install and configure AutoRecon
-mkdir /tools \
+/tools \
 && git clone --depth 1 https://github.com/Tib3rius/AutoRecon.git /tools/AutoRecon \
 && cd /tools/AutoRecon \
 && pip3 install -r requirements.txt \
@@ -211,8 +211,8 @@ DirList
 
 === ファイル調査
 
-Linuxコマンド
-
+* Linux
++
 ----
 find / -name "FileName" -type f
 grep "FileContents" -rl /
@@ -222,9 +222,9 @@ ftp [TargetIP]
 # ls -laやpwd、cdで調査
 # get FILENAME
 ----
-
-Windowsコマンド
-
++
+* Windows
++
 ----
 rem 管理者のみdiskpartを使用可能
 echo list volume | diskpart
@@ -266,6 +266,20 @@ foremost nothing.jpg
 steghide extract -sf nothing.jpg -p [password]
 steghide --info nothing.jpg
 stegcracker any-name.jpeg /usr/share/wordlists/rockyou.txt
+----
+
+=== ROT
+
+単換字式暗号（シーザー暗号）の処理
+
+----
+alias rot13="tr 'A-Za-z' 'N-ZA-Mn-za-m'"
+alias rot47="tr '\!-~' 'P-~\!-O'"
+----
+
+----
+$ echo "Uryyb Jbeyq!" | rot13
+Hello World!
 ----
 
 === SMB Attack
@@ -580,6 +594,7 @@ https://qiita.com/wMETAw/items/34ba5c980e2a38e548db
 http://docs.docker.jp/index.html
 # General
 https://kakyouim.hatenablog.com/entry/2020/04/17/182049
+https://www.aldeid.com/wiki/Main_Page
 # SMB Attack
 https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b
 https://0xdf.gitlab.io/2018/12/02/pwk-notes-smb-enumeration-checklist-update1.html
