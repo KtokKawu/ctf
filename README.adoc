@@ -257,17 +257,6 @@ chmod +x LinEnum.sh
 ./LinEnum.sh
 ----
 
-=== Steganography
-
-----
-exiftool nothing.jpg
-binwalk -e nothing.jpg
-foremost nothing.jpg
-steghide extract -sf nothing.jpg -p [password]
-steghide --info nothing.jpg
-stegcracker any-name.jpeg /usr/share/wordlists/rockyou.txt
-----
-
 === Crypto
 
 ==== Base64
@@ -286,7 +275,7 @@ python3
 'Hello, World!'
 ----
 
-=== ROT
+==== ROT
 
 単換字式暗号（シーザー暗号）の処理
 
@@ -302,15 +291,72 @@ Hello World!
 
 === Forensics
 
-* Grep file contents
+==== Steganography
+
+* Image
+** Exif(Exchangeable image file)情報(JPEG、TIFF、JPEG XR)の確認
 +
+----
+exiftool target.jpg
+----
++
+** ファイル情報の確認
++
+----
+# file type/category info
+binwalk -e target.jpg
+# target/embedded file data info
+steghide info target.jpg
+----
++
+** ファイルのヘッダやフッタ、内部データ構造に基づくファイル復元
++
+----
+foremost target.jpg
+----
++
+** 埋込み情報(ファイル)の抽出
++
+----
+binwalk -D='.*' target.dat
+steghide extract -sf target.jpg -p [password]
+----
++
+** 総当り攻撃による埋込み情報の取得
++
+----
+stegcracker target.jpeg /usr/share/wordlists/rockyou.txt
+----
++
+* zip
+** メタ情報の確認
++
+----
+zipinfo -v file.zip
+----
++
+** 暗号化zipに対する既知平文攻撃 +
+LinuxやMacのzipコマンド、他アーカイバの間で圧縮率に差異があるため、各zipの圧縮率はいずれかの方法で揃える。
++
+----
+pkcrack -C test.zip \       # 暗号化されたzipファイル
+        -c plaintext.txt \  # 暗号化されたzipファイルの中で、平文が分かるファイル
+        -p plaintext.txt \  # 平文ファイル
+        -P plaintext.zip \  # 平文のファイルが入っている暗号化されていないzip
+        -d target.zip       # 出力先（復号したzipファイルの名前）
+ ----
+
+==== 任意のファイル内容の抽出
+
 ----
 $ grep -o "thm{.*}" f.01
 thm{example_flag}
 ----
-* Fix incorrect file header +
+
+==== ファイルヘッダの修正
+
 一例として、「xxd」コマンドで16進数にダンプし、「dd」コマンドでファイル内容を修正する。
-+
+
 |===
 |bs=byte数 |1回に読み書きするブロックサイズ(byte)を指定。 +
 ブロックサイズには、例として1024の累乗ならK、1000の累乗ならKBが使える。
@@ -318,7 +364,7 @@ thm{example_flag}
 変換方法の指定は「,」で区切り、複数指定可能。
 |notrunc |ddコマンドの規定の変換方法の1つ。出力ファイルを切り詰めない。
 |===
-+
+
 ----
 $ xxd file.png | head
 00000000: 0000 0000 0d0a 1a0a 0000 000d 4948 4452  ............IHDR
@@ -481,13 +527,14 @@ Telnet, VMware Authentication Daemon (vmauthd), VNC, Generic Wrapper, Web Form
 ----
 hydra -l [uname] \
       -P ~/pwd-list/[pwdtext] \
-      [TargetIP] \
-      [TargetProtocol] \
-      -V \                                                          # PWDマイニング中にUID、PWDを表示
-      -f \                                                          # 指定したPWDが見つかったら停止
+      [TargetIP] \              # Protocol can be added
+      [TargetProtocol] \        # Can be omitted
+      -V \                      # Display UID, PWD during UID/PWD mining
+      -f \                      # Stop hydra when the specified PWD is found
 # Web form
-#     http-post-form \
-#     "/path/to/login:uid=XXXXX&pwd=XXXXX&Login=Login:Login Failed" # "[Login Page]:[Request Body]:[Error Message]"
+#     http-post-form \          # TargetProtocol
+# Example: "[Login Page]:[Request Body]:[Error Message]"
+#     "/path/to/login:uid=^USER^&pwd=^PASS^&Login=Login:Login Failed"
 ----
 
 ==== ncrack
@@ -514,7 +561,7 @@ medusa -h [TargetIP] \
 #      -M web-form \
 #      -m FORM:"path/to/login" \
 #      -m DENY-SIGNAL:"Example Access Denied" \
-#      -m FORM-DATA:"post?uid=XXXXX&pwd=XXXXX&Login=Login"
+#      -m FORM-DATA:"post?uid=&pwd=&Login=ExampleLogin"
 ----
 
 === Penetration
@@ -645,6 +692,8 @@ http://docs.docker.jp/index.html
 # General
 https://kakyouim.hatenablog.com/entry/2020/04/17/182049
 https://www.aldeid.com/wiki/Main_Page
+# Crypto
+https://falconctf.hatenablog.com/
 # SMB Attack
 https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b
 https://0xdf.gitlab.io/2018/12/02/pwk-notes-smb-enumeration-checklist-update1.html
