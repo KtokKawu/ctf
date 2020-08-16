@@ -344,12 +344,12 @@ pkcrack -C test.zip \       # 暗号化されたzipファイル
         -p plaintext.txt \  # 平文ファイル
         -P plaintext.zip \  # 平文のファイルが入っている暗号化されていないzip
         -d target.zip       # 出力先（復号したzipファイルの名前）
- ----
+----
 
 ==== 任意のファイル内容の抽出
 
 ----
-$ grep -o "thm{.*}" f.01
+$ grep \-o "thm{.*}" f.01
 thm{example_flag}
 ----
 
