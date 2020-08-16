@@ -162,6 +162,7 @@ openvpn /etc/openvpn/[TryHackMeUserName].ovpn &
 リバースシェルを張る時などのインバウンド通信が失敗してしまう。Linuxで構築する場合も同様。
 * 「--cap-add」を利用する代わりに「--privileged」でもopenvpnのエラー(errno=1)を回避できるが、 +
 プライベートDockerインスタンスが特権モードで実行されると、ホストプロセスのアクセスやエスカレーションを許してしまうため非推奨。
+* dockerコンテナ側でopenvpnを張るとホストOS側のopenvpnが阻害されるため対策を考え中。。。★
 
 == ハッキング技術メモ
 
@@ -187,16 +188,18 @@ nmap -sV -p [TargetPort] --script=vulscan/vulscan.nse www.example.com [TargetIP]
 searchsploit [word]     # wordExapmle: 「ProFTPd 1.3.5」、「Apache 2.4.18」
 ----
 
-=== ディレクトリ検査
+=== ディレクトリ調査
+
+オプションを増やすほど重くなることに注意。
 
 ----
-gobuster dir \                    # ディレクトリ/ファイルの総当りモード
+gobuster dir \                    # ディレクトリ/ファイルの総当たりモード
          -u http://[TargetIP]/ \
-         -e \                     # URL全体を表示
-         -k \                     # SSL証明書の検証をスキップ
-         -o ./result_gobuster.txt
-         -s 200 \                 # 301,302,403,404
-         -t 40 \                  # 同時スレッド数
+#         -e \                     # URL全体を表示
+#         -k \                     # SSL証明書の検証をスキップ、CTF系ではHTTPSは少なそう
+#         -o ./result_gobuster.txt
+#         -s 200 \                 # 301,302,403,404
+         -t 64 \                  # 同時スレッド数、デフォルトは40らしい
          -w [DirList] \
          -x html,txt \            # php
 ----
@@ -206,12 +209,36 @@ DirList
 * /usr/share/wordlists/dirb/common.txt
 * /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt
 
+=== ファイル調査
+
+Linuxコマンド
+
+----
+find / -name "FileName" -type f
+grep "FileContents" -rl /
+find / -find / -type f -print | xargs grep 'FileContents'
+# 「anonymous」ユーザや判明したユーザでログイン
+ftp [TargetIP]
+# ls -laやpwd、cdで調査
+# get FILENAME
+----
+
+Windowsコマンド
+
+----
+rem 管理者のみdiskpartを使用可能
+echo list volume | diskpart
+dir /s /b | find "FileNameOrFileFormat"
+findstr /s /i FileContents c:\*
+----
+
 === Enumeration
 
 ==== enum4linux
 
 ----
-enum4linux -a [TargetIP] | tee ./enum4linux.log
+enum4linux -a [Target
+] | tee ./enum4linux.log
 ----
 
 ==== link:https://github.com/rebootuser/LinEnum[LinEnum]
