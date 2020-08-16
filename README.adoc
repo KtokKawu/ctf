@@ -268,6 +268,24 @@ steghide --info nothing.jpg
 stegcracker any-name.jpeg /usr/share/wordlists/rockyou.txt
 ----
 
+=== Crypto
+
+==== Base64
+
+----
+echo -n "username:password" | base64
+echo "dXNlcm5hbWU6cGFzc3dvcmQ=" | base64 -d
+----
+
+==== asciicode
+
+----
+python3
+>>> c=[72,101,108,108,111,44,32,87,111,114,108,100,33]
+>>> ''.join([chr(i) for i in c])
+'Hello, World!'
+----
+
 === ROT
 
 単換字式暗号（シーザー暗号）の処理
