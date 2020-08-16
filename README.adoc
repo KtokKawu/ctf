@@ -300,6 +300,38 @@ $ echo "Uryyb Jbeyq!" | rot13
 Hello World!
 ----
 
+=== Forensics
+
+* Grep file contents
++
+----
+$ grep -o "thm{.*}" f.01
+thm{example_flag}
+----
+* Fix incorrect file header +
+一例として、「xxd」コマンドで16進数にダンプし、「dd」コマンドでファイル内容を修正する。
++
+|===
+|bs=byte数 |1回に読み書きするブロックサイズ(byte)を指定。 +
+ブロックサイズには、例として1024の累乗ならK、1000の累乗ならKBが使える。
+|conv=変換方法 |notrunc等の規定の変換方法で変換する。 +
+変換方法の指定は「,」で区切り、複数指定可能。
+|notrunc |ddコマンドの規定の変換方法の1つ。出力ファイルを切り詰めない。
+|===
++
+----
+$ xxd file.png | head
+00000000: 0000 0000 0d0a 1a0a 0000 000d 4948 4452  ............IHDR
+00000010: 0000 02d0 0000 015e 0800 0000 0089 6e77  .......^......nw
+$ printf '\x89\x50\x4e\x47' | dd conv=notrunc of=file.png bs=1
+4+0 records in
+4+0 records out
+4 bytes copied, 0.000119739 s, 33.4 kB/s
+$ xxd file.png | head
+00000000: 8950 4e47 0d0a 1a0a 0000 000d 4948 4452  .PNG........IHDR
+00000010: 0000 02d0 0000 015e 0800 0000 0089 6e77  .......^......nw
+----
+
 === SMB Attack
 
 ==== Tools
@@ -511,7 +543,7 @@ john crack --show
 chmod 600 id_rsa
 ----
 
-=== 権限昇格
+=== Privilleged Escaration
 
 ==== Scripts
 
