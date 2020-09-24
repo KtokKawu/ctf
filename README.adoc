@@ -580,6 +580,22 @@ rlwrap nc -lvnp 1234
 # Uploading PRS file & Web Access
 ----
 
+==== Web App attack
+
+===== Tools
+
+* Proxy Tool
+** link:https://portswigger.net/burp[Burp Suite]
+** link:https://mitmproxy.org/[mitmproxy]
+** link:https://owasp.org/www-project-zap/[OWASP ZAP]
+** link:https://github.com/DeNA/PacketProxy[Packet Proxy]
+** link:https://www.telerik.com/fiddler[Telerik Fiddler]
+* link:https://owasp.org/www-community/Vulnerability_Scanning_Tools[Scan/Fuzzing Tools]
+
+===== Payloads
+
+link:https://github.com/swisskyrepo/PayloadsAllTheThings[PayloadsAllTheThings]
+
 ==== RSAプライベートキーのクラック
 
 ----
