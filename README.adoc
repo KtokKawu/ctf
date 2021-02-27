@@ -44,9 +44,8 @@ toc::[]
 ----
 # Kali Linuxの公式イメージDL
 docker pull kalilinux/kali-rolling
-docker images
 # Dockerfileを使用する場合
-docker image build -t kalilinux/kali-rolling:latest C:\path\to\Dockerfile
+# docker image build -t kalilinux/kali-rolling:latest C:\path\to\Dockerfile
 # コンテナ(初回)起動
 docker run -it --name <C-NAME> kalilinux/kali-rolling
 docker exec -it <CID> /bin/bash
@@ -57,7 +56,7 @@ echo "deb http://http.kali.org/kali kali-rolling main contrib non-free" > /etc/a
 && echo "deb http://http.kali.org/kali kali-experimental main contrib non-free" >> /etc/apt/sources.list
 # Kali Linuxのパッケージインストール
 apt -y update && apt -y upgrade
-apt install -y kali-linux-full
+apt install -y kali-linux-default
 # 他ツール、ライブラリ
 apt install -y bash-completion build-essential bzip2 colordiff colortail curl exiftool gdb git iputils-ping iputils-tracepath jq libjpeg-dev libssl-dev libxml2-dev libxslt1-dev ltrace mariadb-client net-tools nodejs npm openvpn postgresql python-dev rlwrap smbclient steghide strace telnet tor vim wget yarnpkg zip zlib1g-dev
 curl https://raw.githubusercontent.com/Paradoxis/StegCracker/master/stegcracker > /usr/local/bin/stegcracker
@@ -71,7 +70,7 @@ git clone https://github.com/longld/peda.git ~/peda \
 git clone https://github.com/scipag/vulscan ~/scipag_vulscan \
 && ln -s `pwd`/scipag_vulscan /usr/share/nmap/scripts/vulscan
 # Install and configure AutoRecon
-/tools \
+mkdir /tools \
 && git clone --depth 1 https://github.com/Tib3rius/AutoRecon.git /tools/AutoRecon \
 && cd /tools/AutoRecon \
 && pip3 install -r requirements.txt \
