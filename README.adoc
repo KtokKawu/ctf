@@ -262,8 +262,7 @@ findstr /s /i FileContents c:\*
 ==== enum4linux
 
 ----
-enum4linux -a [Target
-] | tee ./enum4linux.log
+enum4linux -a [Target] | tee ./enum4linux.log
 ----
 
 ==== link:https://github.com/rebootuser/LinEnum[LinEnum]
