@@ -27,11 +27,11 @@ endif::[]
 
 [CAUTION]
 ====
-KtokKawuは、自衛や検証/CTFのため、ハッキング技術を学習しています。 +
+KtokKawuは、自衛/検証/CTFのため、ハッキング技術を学習しています。 +
 自分の管理外の端末や機器(一般に公開されているWebサイトや各種サーバやWi-Fiスポット、他人の端末や機器等)に対し、 +
-非合法な目的で本リポジトリで公開しているツール類やテクニックを使用しないこと。 +
-必ず自己責任の元、ローカル環境やCTF等で攻撃が許可されたサイトに対してのみ使用すること。 +
-KtokKawuは、本リポジトリを利用する他のユーザや企業、団体等が起こした全ての事象に関して一切責任を負いません。
+非合法な目的で、本リポジトリにて公開しているツール類やテクニックを使用しないでください。 +
+必ず自己責任の元、ローカル環境やCTF・バグバウンティ等で攻撃が許可されたサイトに対してのみ使用してください。 +
+あらゆる人物/企業/団体等が、本リポジトリの内容を利用して起こした全ての事象に関して、KtokKawuは一切責任を負いません。
 ====
 
 toc::[]
@@ -40,41 +40,51 @@ toc::[]
 
 === 初回の手順
 
+下記をPowerShellで実行することで、検査用のKali Dockerコンテナを作成できます。
+
 [PowerShell/CMD]
 ----
 # Kali Linuxの公式イメージDL
 docker pull kalilinux/kali-rolling
-# Dockerfileを使用する場合
+
+# Dockerfileを介して起動する場合
 # docker image build -t kalilinux/kali-rolling:latest C:\path\to\Dockerfile
 # コンテナ(初回)起動
 docker run -it --name <C-NAME> kalilinux/kali-rolling
 docker exec -it <CID> /bin/bash
+
 # リポジトリの登録
 echo "deb http://http.kali.org/kali kali-rolling main contrib non-free" > /etc/apt/sources.list \
 && echo "deb-src http://http.kali.org/kali kali-rolling main contrib non-free" >> /etc/apt/sources.list \
 && echo "deb http://http.kali.org/kali kali-last-snapshot main contrib non-free" >> /etc/apt/sources.list \
 && echo "deb http://http.kali.org/kali kali-experimental main contrib non-free" >> /etc/apt/sources.list
+
 # Kali Linuxのパッケージインストール
 apt -y update && apt -y upgrade
 apt install -y kali-linux-default
+
 # 他ツール、ライブラリ
 apt install -y bash-completion build-essential bzip2 colordiff colortail curl exiftool gdb git iputils-ping iputils-tracepath jq libjpeg-dev libssl-dev libxml2-dev libxslt1-dev ltrace mariadb-client net-tools nodejs npm openvpn postgresql python-dev rlwrap smbclient steghide strace telnet tor vim wget yarnpkg zip zlib1g-dev
 curl https://raw.githubusercontent.com/Paradoxis/StegCracker/master/stegcracker > /usr/local/bin/stegcracker
 chmod +x /usr/local/bin/stegcracker
+
 # apt install -y bash-completion build-essential bzip2 colordiff colortail libjpeg-dev libssl-dev nikto nmblookup pip python-pybloomfiltermmap rpcclient
 # Setup gdb-peda
 git clone https://github.com/longld/peda.git ~/peda \
 && echo "source ~/peda/peda.py" >> ~/.gdbinit
+
 # Setup nmap CVE script
 # Option Usage: --script=vulscan/vulscan.nse www.example.com
 git clone https://github.com/scipag/vulscan ~/scipag_vulscan \
 && ln -s `pwd`/scipag_vulscan /usr/share/nmap/scripts/vulscan
+
 # Install and configure AutoRecon
 mkdir /tools \
 && git clone --depth 1 https://github.com/Tib3rius/AutoRecon.git /tools/AutoRecon \
 && cd /tools/AutoRecon \
 && pip3 install -r requirements.txt \
 && ln -s /tools/AutoRecon/src/autorecon/autorecon.py /usr/local/bin/autorecon
+
 # Get some scripts
 git clone https://github.com/pentestmonkey/php-reverse-shell ~/prh \
 && git clone https://github.com/lucyoa/kernel-exploits ~/exploits/ksploits \
@@ -85,6 +95,7 @@ git clone https://github.com/pentestmonkey/php-reverse-shell ~/prh \
 /opt/w3af/w3af_console ; \
 bash /tmp/w3af_dependency_install.sh ; \
 echo 'export PATH=/opt/w3af:$PATH' >> /etc/profile
+
 # Get Password list
 mkdir ~/pwd-list \
 && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/john.txt.bz2 \
@@ -118,10 +129,12 @@ mkdir ~/pwd-list \
 && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/web-extensions.txt.bz2 \
 && wget -P ~/pwd-list/ http://downloads.skullsecurity.org/passwords/web-mutations.txt.bz2 \
 && bzip2 -d ~/pwd-list/*.bz2
+
 # コンテナ保存
 docker stop <CID>
 docker rename <CID> <C-NAME>
 docker commit <CID> <REPO-NAME>:<TAG-NAME>
+
 # コンテナ起動(ホスト側へポートフォワード)
 # openvpnを利用するには、Linux capabilitiesのCAP_NET_ADMINを許可する必要があるため、「--cap-add NET_ADMIN」を追加
 # 上記により、openvpn利用時の「ERROR: Cannot ioctl TUNSETIFF tun: Operation not permitted (errno=1)」を回避
@@ -129,6 +142,7 @@ docker commit <CID> <REPO-NAME>:<TAG-NAME>
 docker images
 docker run --cap-add NET_ADMIN  --cap-add SYS_ADMIN --name <C-NAME> -itd -p <HOST-PORT>:<C-PORT> <REPO-NAME>:<TAG-NAME>
 docker ps -a
+
 # 不要なコンテナ、イメージ削除
 docker rm -f <CID>
 docker rmi -f <IID>
@@ -140,10 +154,13 @@ docker rmi -f <IID>
 ----
 # コンテナ接続
 docker exec -it <C-NAME> /bin/bash
+
 # コンテナ開始/停止/再起動
 docker stop/start/restart <C-NAME>
+
 # コンテナ内からホストへファイルをコピー
 docker cp <C-ID>:/file/path/within/container /host/path/target
+
 # IP確認
 docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
 
@@ -151,6 +168,7 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' <C-NAME>
 # openvpn利用時の「ERROR: Cannot open TUN/TAP dev /dev/net/tun: No such file or directory (errno=2)」の回避
 mkdir -p /dev/net
 mknod /dev/net/tun c 10 200
+
 # Try Hack MeへのOpen VPN接続
 openvpn /etc/openvpn/[TryHackMeUserName].ovpn &
 ----
@@ -160,8 +178,16 @@ openvpn /etc/openvpn/[TryHackMeUserName].ovpn &
 * Windows Firewallの受信規則のうち、パブリックの「com.docker.backend」が有効だと、 +
 リバースシェルを張る時などのインバウンド通信が失敗してしまう。Linuxで構築する場合も同様。
 * 「--cap-add」を利用する代わりに「--privileged」でもopenvpnのエラー(errno=1)を回避できるが、 +
-プライベートDockerインスタンスが特権モードで実行されると、ホストプロセスのアクセスやエスカレーションを許してしまうため非推奨。
-* dockerコンテナ側でopenvpnを張るとホストOS側のopenvpnが阻害されるため対策を考え中。。。★
+プライベートDockerインスタンスが特権モードで実行されると、ホストプロセスへのアクセスやエスカレーションを許してしまうため非推奨。
+* Dockerインスタンスをstopし、再度`docker start <C-NAME>`した際に出る下記エラーは、 +
+管理者権限のPowerShellで当該コマンドを実行せずとも、`docker restart <C-NAME>`で回避できる。
++
+----
+An attempt was made to access a socket in a way forbidden by its access permissions.
+----
++
+* 同じovpnファイルを用いて、dockerコンテナとホストOSそれぞれでopenvpnを張ると、 +
+もう一方のopenvpnが阻害されるため、各所で異なるovpnファイルを利用するとよい。
 
 == ハッキング技術メモ
 
